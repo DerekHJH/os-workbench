@@ -1,0 +1,8 @@
+define g
+	layout asm
+	b main
+	c
+	ni 75
+
+
+end

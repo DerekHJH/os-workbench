@@ -1,0 +1,8 @@
+define g
+  layout asm
+	b main
+	start
+	ni 5
+
+end
+

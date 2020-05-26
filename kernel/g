@@ -1,0 +1,7 @@
+define g
+  layout asm
+	b main
+	c
+
+end
+	
