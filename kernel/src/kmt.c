@@ -40,9 +40,6 @@ static void kmt_spin_lock(spinlock_t *lk)
   _intr_write(0);
 	while(_atomic_xchg(&(lk->locked), 1));
 
-#ifdef DEBUG
-	//printf("\033[32m%s %d to %d\033[0m\n", lk->name, lk->cpu, _cpu());
-#endif
 	lk->intr = intr;
 	lk->cpu = _cpu();//debug
 	panic_on(lk->locked != 1, "\033[31mlock != 1\033[0m\n");
@@ -77,7 +74,7 @@ static void kmt_sem_wait(sem_t *sem)
 		panic_on(sem->tail == sem->head, "\033\31mIn kmt_sem_wait, sem->tail == sem->head\033[0m\n");
 	}
 	kmt_spin_unlock(&(sem->lock));
-	if(Flag)_yield();
+	if(Flag)_yield();//might be buggy
 }
 static void kmt_sem_signal(sem_t *sem)
 {
