@@ -200,7 +200,7 @@ void color_test(size_t *Left, size_t Start, size_t End, BMP_t *BMPhead, int *Cho
 				}
 				panic_on(cnt < 0, "\033[31mcnt < 0!!\n\033[0m");
 			}	
-			if(15 * cnt < w)
+			if(8 * cnt < w)
 			{
 				choice = k;
 				break;
