@@ -4,6 +4,7 @@ static void os_init()
 	//mpe still not on, no need to worry about mpe
   pmm->init();
 	kmt->init();
+	dev->init();
 }
 
 static void os_run() 
