@@ -210,7 +210,7 @@ void color_test(size_t *Left, size_t Start, size_t End, BMP_t *BMPhead, int *Cho
 	//if(clusters[choice].sectors[0][0] == 0 && clusters[choice].sectors[0][1] == 0)printf("choice is %d, cnt is %d\n", choice, cnt);
 	*Choice = choice;
 }
-void print_checknum(DIR_t *obj)
+void print_checknum2(DIR_t *obj)
 {
 	char buf[55];
 	long long clusternum = obj->DIR_FstClusHI;
@@ -269,6 +269,44 @@ void print_checknum(DIR_t *obj)
 	fscanf(fp, "%s", buf);
 	printf("%s", buf);
 	pclose(fp);
+}
+
+void print_checknum(DIR_t *obj)
+{
+	char buf[55];
+	long long clusternum = obj->DIR_FstClusHI;
+	clusternum = ((clusternum << 16) | obj->DIR_FstClusLO);
+	clusternum -= 2;
+	if(clusternum < 0 || clusternum >= MAXCLUSTER)
+	{
+		print_dummy();
+		return;
+	}
+	BMP_t *BMPhead = (BMP_t *)&clusters[clusternum].sectors[0][0];
+	Label[clusternum] = BMPHEAD;
+	if(BMPhead->Signature != 0x4d42)
+	{
+		print_dummy();
+		return;
+	}	
+	long long Filesize = BMPhead->FileSize;
+	if((size_t)BMPhead + (size_t)Filesize > (size_t)&clusters[MAXCLUSTER - 1].sectors[7][511])
+	{
+		print_dummy();
+		return;
+	}
+	char filename[30] = "/tmp/XXXXXX";
+  int fd = mkstemp(filename);
+  panic_on(fd < 0, "\033[31mfile haha open failed in checknum!!\033[0m\n");
+  write(fd, BMPhead, Filesize);
+  close(fd);
+  char command[30];
+  sprintf(command, "sha1sum %s", filename);	
+  FILE *fp = popen(command, "r");
+  panic_on(!fp, "\033[31mpopen failed!!\033[0m\n");
+  fscanf(fp, "%s", buf);
+  printf("%s", buf);
+  pclose(fp);
 }
 
 void print_name(DIR_t *obj)
@@ -368,15 +406,14 @@ int main(int argc, char *argv[])
       		temp = (DIR_t *)(&clusters[k].sectors[i][j]);
       		if(temp->DIR_Name[8] == 'B' && temp->DIR_Name[9] == 'M' && temp->DIR_Name[10] == 'P')
 					{
-						flag++;
-						//if(flag == 13)
-						//{
 						print_checknum(temp);
 						printf(" ");
 						print_name(temp);
 						printf("\n");
-						fflush(stdout);
-						//}
+						print_checknum2(temp);
+            printf(" ");
+            print_name(temp);
+            printf("\n");
 					}
       	}
       }
