@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-
+#include <pthread.h>
 #define panic_on(cond, s)\
 	do\
 	{\
@@ -10,13 +10,38 @@
 			assert(0);\
 		}\
 	}while(0)
+#define PGSIZE 4096
+#define KSIZE (256 - sizeof(size_t))
+#define VSIZE (PGSIZE - 256)
+#define BIGVSIZE (PGSIZE - sizeof(size_t))
+typedef struct _kvent
+{
+	struct _kvent *next;
+	int order; //0 --- the start of the key-value mapping, and 1, 2, 3...
+	union
+	{
+		struct 
+		{
+			char key[KSIZE];
+			char value[VSIZE];	
+		}
+		char bigvalue[BIGVSIZE];
+	};
+}__attribute__((packed)) kvent_t;
+
+typedef struct _log
+{
+
+}__attribute__((packed)) log_t;
 
 
 
 
 struct kvdb 
 {
-  // your definition here
+	pthread_mutex_t lock;
+	int refcnt;
+
 };
 
 struct kvdb *kvdb_open(const char *filename) 
