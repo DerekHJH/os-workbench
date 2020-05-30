@@ -24,7 +24,7 @@ typedef struct _kvent
 		{
 			char key[KSIZE];
 			char value[VSIZE];	
-		}
+		};
 		char bigvalue[BIGVSIZE];
 	};
 }__attribute__((packed)) kvent_t;
