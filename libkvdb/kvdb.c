@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #define panic_on(cond, s)\
 	do\
 	{\
