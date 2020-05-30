@@ -59,7 +59,7 @@ struct kvdb *kvdb_open(const char *filename)
 	pthread_mutex_lock(&openlock);
 	for(int i = 0; i < dbtot; i++)                        	
   {
-  	if(strcmp(filename, kvdbp[i].name) == 0)return kvdb[i];
+  	if(strcmp(filename, kvdbp[i]->name) == 0)return kvdb[i];
   }
 	int k = -1;
 	for(int i = 0; i < dbtot; i++)
@@ -70,9 +70,9 @@ struct kvdb *kvdb_open(const char *filename)
 		dbtot++;
 	}
 	kvdbp[k] = malloc(sizeof(kvdb_t));
-	sprintf(kvdbp[k].name, "%s", filename);
-	kvdbp[k].refcnt = 1;
-	kvdbp[k].fd = open(filename, O_CREAT | O_WRONLY);
+	sprintf(kvdbp[k]->name, "%s", filename);
+	kvdbp[k]->refcnt = 1;
+	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY);
 	pthread_mutex_init(&kvdb[k].lock, NULL);
 	pthread_mutex_unlock(&openlock);
   return kvdbp[k];
