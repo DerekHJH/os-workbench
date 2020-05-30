@@ -110,6 +110,7 @@ int kvdb_close(struct kvdb *db)
 		close(db->fd);
 		kvdbp[db->index] = NULL;
 		free(db);
+		printf("asckjvasjhas\n");
 	}
 	pthread_mutex_unlock(&openlock);
   return 0;
