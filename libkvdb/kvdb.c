@@ -14,7 +14,7 @@
 		}\
 	}while(0)
 #define PGSIZE 4096
-#define KSIZE (256 - sizeof(size_t))
+#define KSIZE (256 - sizeof(size_t) - sizeof(int))
 #define VSIZE (PGSIZE - 256)
 #define BIGVSIZE (PGSIZE - sizeof(size_t))
 typedef struct _kvent
