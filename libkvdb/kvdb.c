@@ -48,6 +48,7 @@ typedef struct kvdb
 	pthread_mutex_t lock;
 	int refcnt;
 	int fd;
+	int index;
 	char name[4096];
 }kvdb_t;
 #define DBSIZE 1024
@@ -59,6 +60,7 @@ struct kvdb *kvdb_open(const char *filename)
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
 	pthread_mutex_lock(&openlock);
 	for(int i = 0; i < dbtot; i++)                        	
+	if(kvdbp[i] != NULL)
   {
   	if(strcmp(filename, kvdbp[i]->name) == 0)
 		{
@@ -78,6 +80,7 @@ struct kvdb *kvdb_open(const char *filename)
 	sprintf(kvdbp[k]->name, "%s", filename);
 	kvdbp[k]->refcnt = 1;
 	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY);
+	kvdbp[k]->index = k;
 	pthread_mutex_init(&kvdbp[k]->lock, NULL);
 	pthread_mutex_unlock(&openlock);
   return kvdbp[k];
@@ -85,6 +88,15 @@ struct kvdb *kvdb_open(const char *filename)
 
 int kvdb_close(struct kvdb *db) 
 {
+	pthread_mutex_lock(&openlock);
+	db->refcnt--;
+	if(db->refcnt <= 0)
+	{
+		close(db->fd);
+		kvdbp[db->index] = NULL;
+		free(db);
+	}
+	pthread_mutex_unlock(&openlock);
   return -1;
 }
 
