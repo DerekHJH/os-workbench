@@ -59,7 +59,7 @@ typedef struct kvdb
 int dbtot = 0;
 kvdb_t *kvdbp[DBSIZE] = {0};
 pthread_mutex_t openlock = PTHREAD_MUTEX_INITIALIZER;
-void print_kvdb(struct kvdb_t *db)
+void print_kvdb(struct kvdb *db)
 {
 	printf("=======================================\n");
 	printf("fd is %d\n", db->fd);
