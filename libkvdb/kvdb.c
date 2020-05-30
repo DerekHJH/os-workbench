@@ -30,13 +30,10 @@ typedef struct _kvent
 }__attribute__((packed)) kvent_t;
 typedef struct _log
 {
-	struct metadata
-	{
-		int commit;//1 --- committed, 0 --- not committed
-		int n;//number of blocks to be wrriten
-		int pid;//which process or thread is using the log;
-	};
-	char reserved[PGSIZE - sizeof(struct metadata)];
+	int commit;//1 --- committed, 0 --- not committed
+	int n;//number of blocks to be wrriten
+	int pid;//which process or thread is using the log;
+	char reserved[PGSIZE - 3 * sizeof(int)];
 	kvent_t data[PGSIZE + 1];
 }__attribute__((packed)) log_t;
 #define LOGSIZE sizeof(log_t)
