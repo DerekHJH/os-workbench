@@ -40,13 +40,13 @@ typedef struct _log
 
 
 
-struct kvdb 
+typedef struct kvdb 
 {
 	pthread_mutex_t lock;
 	int refcnt;
 	int fd;
 	char name[4096];
-};
+}kvdb_t;
 #define DBSIZE 1024
 int dbtot = 0;
 kvdb_t *kvdbp[DBSIZE] = {0};
