@@ -36,7 +36,7 @@ typedef struct _log
 		int n;//number of blocks to be wrriten
 		int pid;//which process or thread is using the log;
 	};
-	char reserved[PGSIZE - sizeof(metadata)];
+	char reserved[PGSIZE - sizeof(struct metadata)];
 	kvent_t data[PGSIZE + 1];
 }__attribute__((packed)) log_t;
 #define LOGSIZE sizeof(log_t)
