@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <pthread.h>
 #include <string.h>
+#include <stdlib.h>
 #define panic_on(cond, s)\
 	do\
 	{\
