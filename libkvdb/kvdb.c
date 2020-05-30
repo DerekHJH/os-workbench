@@ -93,7 +93,7 @@ struct kvdb *kvdb_open(const char *filename)
 	kvdbp[k] = malloc(sizeof(kvdb_t));
 	sprintf(kvdbp[k]->name, "%s", filename);
 	kvdbp[k]->refcnt = 1;
-	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC);
+	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
 	panic_on(kvdbp[k]->fd < 0, "\033[31mdata base open failed!!\n\033[0m");
 	kvdbp[k]->index = k;
 	pthread_mutex_init(&kvdbp[k]->lock, NULL);
