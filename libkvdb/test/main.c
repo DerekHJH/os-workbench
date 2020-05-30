@@ -14,16 +14,18 @@
 		}\
 	}while(0)
 
-void print_kvdb(kvdb_t *db)
+void print_kvdb(struct kvdb_t *db)
 {
+
+	/*
 	printf("fd is %d\n", db->fd);
 	printf("name is %s\n", db->name);
 	printf("refcnt is %d\n", db->refcnt);
 	printf("index is %d\n", db->index);
+	*/
 }
 int main() 
-{
-	
+{	
   struct kvdb *db;
 	struct kvdb *db2;
   const char *key = "operating-systems";
@@ -36,6 +38,7 @@ int main()
 	print_kvdb(db2);
 	kvdb_close(db);
 	kvdb_close(db2);
+	printf("index is %d\n", db->index);
 	panic_on(db != NULL, "db != db2\n");
 	
 
