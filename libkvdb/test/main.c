@@ -27,7 +27,7 @@ int main()
 	panic_on(db != db2, "db != db2");
 	kvdb_close(db);
 	kvdb_close(db);
-	panic_on(dp == NULL, "db != db2");
+	panic_on(db == NULL, "db != db2");
 	
 
 /*
