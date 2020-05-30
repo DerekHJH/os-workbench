@@ -57,7 +57,6 @@ pthread_mutex_t openlock = PTHREAD_MUTEX_INITIALIZER;
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
-	panic_on(sizeof(log_t) != PGSIZE, "\033[31msizeof(log_t) != PGSIZE\n\033[0m");
 	pthread_mutex_lock(&openlock);
 	for(int i = 0; i < dbtot; i++)                        	
   {
