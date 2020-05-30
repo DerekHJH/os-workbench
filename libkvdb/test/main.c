@@ -26,7 +26,7 @@ int main()
 	panic_on(!(db2 = kvdb_open("a.db")), "cannot open db2");
 	panic_on(db != db2, "db != db2");
 	kvdb_close(db);
-	kvdb_close(db);
+	kvdb_close(db2);
 	panic_on(db != NULL, "db != db2");
 	
 

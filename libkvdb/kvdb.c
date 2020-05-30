@@ -65,6 +65,7 @@ struct kvdb *kvdb_open(const char *filename)
   {
   	if(strcmp(filename, kvdbp[i]->name) == 0)
 		{
+			kvdbp[i]->refcnt++;
 			pthread_mutex_unlock(&openlock);
 			return kvdbp[i];
 		}
