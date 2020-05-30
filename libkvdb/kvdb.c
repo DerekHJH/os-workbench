@@ -44,6 +44,9 @@ typedef struct _log
 
 
 
+
+
+
 typedef struct kvdb 
 {
 	pthread_mutex_t lock;
@@ -56,6 +59,15 @@ typedef struct kvdb
 int dbtot = 0;
 kvdb_t *kvdbp[DBSIZE] = {0};
 pthread_mutex_t openlock = PTHREAD_MUTEX_INITIALIZER;
+void print_kvdb(struct kvdb_t *db)
+{
+	printf("=======================================\n");
+	printf("fd is %d\n", db->fd);
+	printf("name is %s\n", db->name);
+	printf("refcnt is %d\n", db->refcnt);
+	printf("index is %d\n", db->index);
+}
+
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
@@ -90,6 +102,8 @@ struct kvdb *kvdb_open(const char *filename)
 
 int kvdb_close(struct kvdb *db) 
 {
+
+	print_kvdb(db);
 	pthread_mutex_lock(&openlock);
 	db->refcnt--;
 	if(db->refcnt <= 0)
