@@ -3,16 +3,18 @@
 #include <assert.h>
 #include <string.h>
 
-void test_1()
-{
-
-}
 int main() 
 {
-    setbuf(stdout, NULL);
+  struct kvdb *db;
+  const char *key = "operating-systems";
+  char *value;
 
-    printf("Test #1\n");
-    test_1();
+  panic_on(!(db = kvdb_open("a.db")), "cannot open db");
 
-    return 0;
+  kvdb_put(db, key, "three-easy-pieces");
+  value = kvdb_get(db, key); 
+  kvdb_close(db);
+  printf("[%s]: [%s]\n", key, value);
+  free(value);
+  return 0;
 }
