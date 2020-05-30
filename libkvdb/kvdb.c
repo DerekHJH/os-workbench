@@ -94,6 +94,7 @@ struct kvdb *kvdb_open(const char *filename)
 	sprintf(kvdbp[k]->name, "%s", filename);
 	kvdbp[k]->refcnt = 1;
 	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY);
+	panic_on(kvdbp[k]->fd < 0, "\033[31mdata base open failed!!\n\033[0m");
 	kvdbp[k]->index = k;
 	pthread_mutex_init(&kvdbp[k]->lock, NULL);
 	pthread_mutex_unlock(&openlock);
@@ -110,7 +111,6 @@ int kvdb_close(struct kvdb *db)
 		close(db->fd);
 		kvdbp[db->index] = NULL;
 		free(db);
-		printf("asckjvasjhas\n");
 	}
 	pthread_mutex_unlock(&openlock);
   return 0;
