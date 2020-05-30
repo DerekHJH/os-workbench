@@ -28,12 +28,18 @@ typedef struct _kvent
 		char bigvalue[BIGVSIZE];
 	};
 }__attribute__((packed)) kvent_t;
-
 typedef struct _log
 {
-
+	struct metadata
+	{
+		int commit;//1 --- committed, 0 --- not committed
+		int n;//number of blocks to be wrriten
+		int pid;//which process or thread is using the log;
+	};
+	char reserved[PGSIZE - sizeof(metadata)];
+	kvent_t data[PGSIZE + 1];
 }__attribute__((packed)) log_t;
-
+#define LOGSIZE sizeof(log_t)
 
 
 
@@ -41,12 +47,37 @@ struct kvdb
 {
 	pthread_mutex_t lock;
 	int refcnt;
-
+	int fd;
+	char name[4096];
 };
-
+#define DBSIZE 1024
+int dbtot = 0;
+kvdb_t *kvdbp[DBSIZE] = {0};
+pthread_mutex_t openlock = PTHREAD_MUTEX_INITIALIZER;
 struct kvdb *kvdb_open(const char *filename) 
 {
-  return NULL;
+	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
+	panic_on(sizeof(log_t) != PGSIZE, "\033[31msizeof(log_t) != PGSIZE\n\033[0m");
+	pthread_mutex_lock(&openlock);
+	for(int i = 0; i < dbtot; i++)                        	
+  {
+  	if(strcamp(filename, kvdb[i].name) == 0)return kvdb[i];
+  }
+	int k = -1;
+	for(int i = 0; i < dbtot; i++)
+		if(kvdbp[i] == NULL)k = i;
+	if(k == -1)
+	{	
+		k = dbtot;
+		dbtot++;
+	}
+	kvdbp[k] = malloc(sizeof(kvdb_t));
+	sprintf(kvdbp[k].name, "%s", filename);
+	kvdbp[k].refcnt = 1;
+	kvdbp[k].fd = open(filename, O_CREAT | O_WRONLY);
+	pthread_mutex_init(&kvdb[k].lock, NULL);
+	pthread_mutex_unlock(&openlock);
+  return kvdbp[k];
 }
 
 int kvdb_close(struct kvdb *db) 
