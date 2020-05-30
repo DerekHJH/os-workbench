@@ -59,7 +59,11 @@ struct kvdb *kvdb_open(const char *filename)
 	pthread_mutex_lock(&openlock);
 	for(int i = 0; i < dbtot; i++)                        	
   {
-  	if(strcmp(filename, kvdbp[i]->name) == 0)return kvdbp[i];
+  	if(strcmp(filename, kvdbp[i]->name) == 0)
+		{
+			pthread_mutex_unlock(&openlock);
+			return kvdbp[i];
+		}
   }
 	int k = -1;
 	for(int i = 0; i < dbtot; i++)
