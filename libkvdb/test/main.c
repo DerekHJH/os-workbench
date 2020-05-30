@@ -14,8 +14,9 @@
 		}\
 	}while(0)
 
-void print_kvdb(struct kvdb *db)
+void print_kvdb(kvdb_t *db)
 {
+	printf("fd is %d\n", db->fd);
 	printf("name is %s\n", db->name);
 	printf("refcnt is %d\n", db->refcnt);
 	printf("index is %d\n", db->index);
