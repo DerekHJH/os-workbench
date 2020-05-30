@@ -19,6 +19,7 @@ void print_kvdb(struct kvdb *db)
 	printf("fd is %d\n", db->fd);
 	printf("name is %s\n", db->name);
 	printf("refcnt is %d\n", db->refcnt);
+	printf("index is %d\n", db->index);
 }
 int main() 
 {
@@ -31,8 +32,8 @@ int main()
   panic_on(!(db = kvdb_open("a.db")), "cannot open db");
 	panic_on(!(db2 = kvdb_open("a.db")), "cannot open db2");
 	panic_on(db != db2, "db != db2");
-	print_db(db);
-	print_db(db2);
+	print_kvdb(db);
+	print_kvdb(db2);
 	kvdb_close(db);
 	kvdb_close(db2);
 	panic_on(db != NULL, "db != db2\n");
