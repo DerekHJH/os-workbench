@@ -112,12 +112,12 @@ int kvdb_close(struct kvdb *db)
 		free(db);
 	}
 	pthread_mutex_unlock(&openlock);
-  return -1;
+  return 0;
 }
 
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
-  return -1;
+  return 0;
 }
 
 char *kvdb_get(struct kvdb *db, const char *key) 
