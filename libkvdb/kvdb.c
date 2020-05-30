@@ -102,7 +102,6 @@ struct kvdb *kvdb_open(const char *filename)
 
 int kvdb_close(struct kvdb *db) 
 {
-
 	print_kvdb(db);
 	pthread_mutex_lock(&openlock);
 	db->refcnt--;
