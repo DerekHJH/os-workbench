@@ -16,6 +16,7 @@
 
 int main() 
 {
+	/*
   struct kvdb *db;
   const char *key = "operating-systems";
   char *value;
@@ -27,5 +28,6 @@ int main()
   kvdb_close(db);
   printf("[%s]: [%s]\n", key, value);
   free(value);
+	*/
   return 0;
 }
