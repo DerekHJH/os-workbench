@@ -79,7 +79,7 @@ struct kvdb *kvdb_open(const char *filename)
 	sprintf(kvdbp[k]->name, "%s", filename);
 	kvdbp[k]->refcnt = 1;
 	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY);
-	pthread_mutex_init(&kvdb[k].lock, NULL);
+	pthread_mutex_init(&kvdbp[k]->lock, NULL);
 	pthread_mutex_unlock(&openlock);
   return kvdbp[k];
 }
