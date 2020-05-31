@@ -104,7 +104,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 char *kvdb_get(struct kvdb *db, const char *key) 
 {
 	flock(db->fd, LOCK_EX);
-	check_log();		
+	check_log(db);		
 
 
 
