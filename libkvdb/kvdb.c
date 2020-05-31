@@ -64,12 +64,12 @@ int kvdb_close(struct kvdb *db)
 	free(db);
   return 0;
 }
-void Read(off_t offset, int fd, void *buf, size_t count)
+void read2(off_t offset, int fd, void *buf, size_t count)
 {
 	lseek(fd, offset, SEEK_SET);
 	read(fd, buf, count);
 }
-void Write(off_t offset, int fd, void *buf, size_t count)
+void write2(off_t offset, int fd, void *buf, size_t count)
 {
 	lseek(fd, offset, SEEK_SET);
 	write(fd, buf, count);
@@ -78,14 +78,14 @@ void Write(off_t offset, int fd, void *buf, size_t count)
 void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
-	Read(0, db->fd, log, sizeof(log_t));
+	read2(0, db->fd, log, sizeof(log_t));
 	if(log->commit == 0)return;
 	for(int i = 0; i < log->n; i++)
 	{
-		Write(log->addr[i], db->fd, log->data[i], sizeof(PGSIZE));
+		write2(log->addr[i], db->fd, log->data[i], sizeof(PGSIZE));
 	}
 	log->commit = 0;	
-	Write(0, db->fd, log, sizeof(log_t));
+	write2(0, db->fd, log, sizeof(log_t));
 	free(log);
 	return;
 }
