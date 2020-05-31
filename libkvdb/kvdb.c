@@ -82,7 +82,7 @@ void check_log(struct kvdb *db)
 	if(log->commit == 0)return;
 	for(int i = 0; i < log->n; i++)
 	{
-		write2(log->addr[i], db->fd, log->data[i], sizeof(PGSIZE));
+		write2(log->addr[i], db->fd, &log->data[i], sizeof(PGSIZE));
 	}
 	log->commit = 0;	
 	write2(0, db->fd, log, sizeof(log_t));
