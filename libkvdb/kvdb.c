@@ -56,6 +56,7 @@ struct kvdb *kvdb_open(const char *filename)
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
 	if(cur->fd <= 0)return NULL;
+	return NULL;
 }
 
 int kvdb_close(struct kvdb *db) 
