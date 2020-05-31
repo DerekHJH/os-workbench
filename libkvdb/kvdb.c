@@ -92,13 +92,14 @@ void check_log(struct kvdb *db)
 }
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
-	/*
+	flock(db->fd, LOCK_EX);
+	check_log(db);
 	log_t *log = malloc(sizeof(log_t));
 	log->commit = 0;
 	log->n = 1;
 	sprintf(log->data[0].key, key, strlen(key));
 	sprintf(log->data[0].value, value, min(BIGVSIZE, strlen(value)));
-	*/
+	flock(db->fd, LOCK_UN);
   return 0;
 }
 
