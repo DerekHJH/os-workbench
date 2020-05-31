@@ -36,8 +36,8 @@ typedef struct _kvent
 }__attribute__((packed)) kvent_t;
 typedef struct _log
 {	
-	kvent_t data[PGSIZE * 2 - 9];
-	int addr[PGSIZE * 2];
+	kvent_t data[PGSIZE * 2 - 1 - sizeof(size_t) * 2];
+	size_t addr[PGSIZE * 2];
 	int commit;//1 --- committed, 0 --- not committed
   int n;//number of blocks to be wrriten
   char reserved[PGSIZE - 2 * sizeof(int)];
@@ -136,7 +136,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	else len = VSIZE;	
 	while(cur->next > 0)
 	{
-		read2(cur->next * PGSIZE, db->fd, cur, PGSIZE);
+		read2(cur->next, db->fd, cur, PGSIZE);
 		temp = (char *)((size_t)ret + len);
 		sprintf(temp, cur->value, BIGVSIZE);
 		if(cur->next == 0)len += strlen(temp);
