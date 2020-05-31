@@ -106,8 +106,19 @@ char *kvdb_get(struct kvdb *db, const char *key)
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
-
-
+	lseek(db->fd, LOGSIZE, SEEK_SET);
+	int Flag = 0;
+	kvent_t *cur = malloc(sizeof(kvent_t));
+	while(read(db->fd, cur, PGSIZE) > 0)
+	{
+		if(strcmp(cur->key, key) == 0)
+		{
+			Flag = 1;
+			break;
+		}
+	}
+	if(Flag == 0)return NULL;
+	char *ret = malloc(PGSIZE * PGSIZE + 1);
 
 	flock(db->fd, LOCK_UN);
   return NULL;
