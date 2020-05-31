@@ -23,7 +23,7 @@
 typedef struct _kvent
 {
 	size_t next;
-	int order; //0 --- the start of the key-value mapping, and 1, 2, 3...
+	int len; //>0 --- the start of the key-value mapping;
 	union
 	{
 		struct 
@@ -90,15 +90,34 @@ void check_log(struct kvdb *db)
 	free(log);
 	return;
 }
+kvent_t *find_key(struct kvdb *db, const char *key)
+{
+	lseek(db->fd, LOGSIZE, SEEK_SET);
+  int Flag = 0;
+  kvent_t *cur = malloc(sizeof(kvent_t));
+  while(read(db->fd, cur, PGSIZE) > 0)
+  {
+  	if(cur->len > 0 && strcmp(cur->key, key) == 0)
+  	{
+  		Flag = 1;
+  		break;
+  	}
+  }
+	if(Flag == 0)return NULL;
+	else return cur;
+}
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);
+	
 	log_t *log = malloc(sizeof(log_t));
 	log->commit = 0;
 	log->n = 1;
 	sprintf(log->data[0].key, key, strlen(key));
 	sprintf(log->data[0].value, value, min(BIGVSIZE, strlen(value)));
+
+	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
 }
@@ -107,19 +126,9 @@ char *kvdb_get(struct kvdb *db, const char *key)
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
-	lseek(db->fd, LOGSIZE, SEEK_SET);
-	int Flag = 0;
-	kvent_t *cur = malloc(sizeof(kvent_t));
-	while(read(db->fd, cur, PGSIZE) > 0)
-	{
-		if(strcmp(cur->key, key) == 0)
-		{
-			Flag = 1;
-			break;
-		}
-	}
-	if(Flag == 0)return NULL;
-	char *ret = malloc(PGSIZE * PGSIZE + 1);
+	kvent_t *cur = find_key(db, key);	
+	if(cur == NULL)return NULL;
+	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
 	sprintf(temp, cur->value, VSIZE);
@@ -133,7 +142,8 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
-	ret = realloc(ret, len + 1);
+	panic_on(cur->len != len, "\033[31cur->len != len\n\033[0m");
+	free(cur);
 	flock(db->fd, LOCK_UN);
   return ret;
 }
