@@ -114,8 +114,11 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	log_t *log = malloc(sizeof(log_t));
 	log->commit = 0;
 	log->n = 1;
+	log->data[0].len = strlen(value);
+	const char *temp = value;
+	int len = 0;
 	sprintf(log->data[0].key, key, strlen(key));
-	sprintf(log->data[0].value, value, min(BIGVSIZE, strlen(value)));
+	sprintf(log->data[0].value, value, min(VSIZE, strlen(value)));
 
 	free(log);
 	flock(db->fd, LOCK_UN);
