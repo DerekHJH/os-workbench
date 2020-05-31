@@ -52,6 +52,7 @@ typedef struct kvdb
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
+	printf("haha is %zd\n", sizeof(log_t));
 	panic_on(sizeof(log_t) != PGSIZE * PGSIZE, "\033[31msizeof(log_t) != PGSIZE * PGSIZE\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
