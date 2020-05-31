@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
-#include <pthread.h>
+#include <sys/file.h>
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <pthread.h>
+#define min(a, b) (a < b ? a: b)
 #define panic_on(cond, s)\
 	do\
 	{\
@@ -20,7 +22,7 @@
 #define BIGVSIZE (PGSIZE - sizeof(size_t) - sizeof(int))
 typedef struct _kvent
 {
-	struct _kvent *next;
+	size_t next;
 	int order; //0 --- the start of the key-value mapping, and 1, 2, 3...
 	union
 	{
@@ -33,95 +35,79 @@ typedef struct _kvent
 	};
 }__attribute__((packed)) kvent_t;
 typedef struct _log
-{
+{	
+	kvent_t data[PGSIZE * 2 - 9];
+	int addr[PGSIZE * 2];
 	int commit;//1 --- committed, 0 --- not committed
-	int n;//number of blocks to be wrriten
-	int pid;//which process or thread is using the log;
-	char reserved[PGSIZE - 3 * sizeof(int)];
-	kvent_t data[PGSIZE + 1];
+  int n;//number of blocks to be wrriten
+  char reserved[PGSIZE - 2 * sizeof(int)];
 }__attribute__((packed)) log_t;
 #define LOGSIZE sizeof(log_t)
 
-
-
-
-
-
 typedef struct kvdb 
 {
-	pthread_mutex_t lock;
-	int refcnt;
 	int fd;
-	int index;
-	char name[4096];
 }kvdb_t;
-#define DBSIZE 1024
-int dbtot = 0;
-kvdb_t *kvdbp[DBSIZE] = {0};
-pthread_mutex_t openlock = PTHREAD_MUTEX_INITIALIZER;
-void print_kvdb(struct kvdb *db)
-{
-	printf("=======================================\n");
-	printf("fd is %d\n", db->fd);
-	printf("name is %s\n", db->name);
-	printf("refcnt is %d\n", db->refcnt);
-	printf("index is %d\n", db->index);
-}
 
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
-	pthread_mutex_lock(&openlock);
-	for(int i = 0; i < dbtot; i++)                        	
-	if(kvdbp[i] != NULL)
-  {
-  	if(strcmp(filename, kvdbp[i]->name) == 0)
-		{
-			kvdbp[i]->refcnt++;
-			pthread_mutex_unlock(&openlock);
-			return kvdbp[i];
-		}
-  }
-	int k = -1;
-	for(int i = 0; i < dbtot; i++)
-		if(kvdbp[i] == NULL)k = i;
-	if(k == -1)
-	{	
-		k = dbtot;
-		dbtot++;
-	}
-	kvdbp[k] = malloc(sizeof(kvdb_t));
-	sprintf(kvdbp[k]->name, "%s", filename);
-	kvdbp[k]->refcnt = 1;
-	kvdbp[k]->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
-	panic_on(kvdbp[k]->fd < 0, "\033[31mdata base open failed!!\n\033[0m");
-	kvdbp[k]->index = k;
-	pthread_mutex_init(&kvdbp[k]->lock, NULL);
-	pthread_mutex_unlock(&openlock);
-  return kvdbp[k];
+	panic_on(sizeof(log_t) != PGSIZE * PGSIZE, "\033[31msizeof(log_t) != PGSIZE * PGSIZE\n\033[0m");
+	kvdb_t *cur = malloc(sizeof(kvdb_t));
+	cur->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
+	if(cur->fd <= 0)return NULL;
 }
 
 int kvdb_close(struct kvdb *db) 
 {
-	print_kvdb(db);
-	pthread_mutex_lock(&openlock);
-	db->refcnt--;
-	if(db->refcnt <= 0)
-	{
-		close(db->fd);
-		kvdbp[db->index] = NULL;
-		free(db);
-	}
-	pthread_mutex_unlock(&openlock);
+	close(db->fd);
+	free(db);
   return 0;
 }
-
+void Read(off_t offset, int fd, void *buf, size_t count)
+{
+	lseek(fd, offset, SEEK_SET);
+	read(fd, buf, count);
+}
+void Write(off_t offset, int fd, void *buf, size_t count)
+{
+	lseek(fd, offset, SEEK_SET);
+	write(fd, buf, count);
+	fsync(fd);
+}
+void check_log(struct kvdb *db)
+{
+	log_t *log = malloc(sizeof(log_t));
+	Read(0, db->fd, log, sizeof(log_t));
+	if(log->commit == 0)return;
+	for(int i = 0; i < log->n; i++)
+	{
+		Write(log->addr[i], db->fd, log->data[i], sizeof(PGSIZE));
+	}
+	log->commit = 0;	
+	Write(0, db->fd, log, sizeof(log_t));
+	free(log);
+	return;
+}
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
+	/*
+	log_t *log = malloc(sizeof(log_t));
+	log->commit = 0;
+	log->n = 1;
+	sprintf(log->data[0].key, key, strlen(key));
+	sprintf(log->data[0].value, value, min(BIGVSIZE, strlen(value)));
+	*/
   return 0;
 }
 
 char *kvdb_get(struct kvdb *db, const char *key) 
 {
+	flock(db->fd, LOCK_EX);
+	check_log();		
+
+
+
+	flock(db->fd, LOCK_UN);
   return NULL;
 }
