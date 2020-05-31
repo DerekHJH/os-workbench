@@ -21,12 +21,6 @@ int main()
   const char *key = "operating-systems";
   char *value;
 
-  panic_on(!(db = kvdb_open("a.db")), "cannot open db");
-	panic_on(!(db2 = kvdb_open("a.db")), "cannot open db2");
-	panic_on(db != db2, "db != db2");
-	kvdb_close(db);
-	kvdb_close(db2);
-
 /*
   kvdb_put(db, key, "three-easy-pieces");
   value = kvdb_get(db, key); 
