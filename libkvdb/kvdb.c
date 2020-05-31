@@ -119,7 +119,20 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	}
 	if(Flag == 0)return NULL;
 	char *ret = malloc(PGSIZE * PGSIZE + 1);
-
+	char *temp = ret;
+	int len = 0;
+	sprintf(temp, cur->value, VSIZE);
+	if(cur->next == 0)len = strlen(temp);
+	else len = VSIZE;	
+	while(cur->next > 0)
+	{
+		read2(cur->next * PGSIZE, db->fd, cur, PGSIZE);
+		temp = (char *)((size_t)ret + len);
+		sprintf(temp, cur->value, BIGVSIZE);
+		if(cur->next == 0)len += strlen(temp);
+		else len += BIGVSIZE;	
+	}
+	ret = realloc(ret, len + 1);
 	flock(db->fd, LOCK_UN);
-  return NULL;
+  return ret;
 }
