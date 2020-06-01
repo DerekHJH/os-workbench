@@ -171,7 +171,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(LOGDATASIZE, db->fd, &log->addr, PGSIZE * 2);
 	log->commit = 1;
 	write2(LOGSIZE - PGSIZE, db->fd, &(log->commit), PGSIZE);
-	printf("addr is 0x%zx\n", &log->commit);
+	printf("addr is 0x%p\n", &(log->commit));
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
