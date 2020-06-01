@@ -34,9 +34,10 @@ typedef struct _kvent
 		char bigvalue[BIGVSIZE];
 	};
 }__attribute__((packed)) kvent_t;
+#define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
 typedef struct _log
 {	
-	kvent_t data[PGSIZE * 2 - 1 - sizeof(size_t) * 2];
+	kvent_t data[LOGDATASIZE];
 	size_t addr[PGSIZE * 2];
 	int commit;//1 --- committed, 0 --- not committed
   int n;//number of blocks to be wrriten
@@ -160,7 +161,8 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 	}
 
-	write2(0, db->fd, log, LOGSIZE - PGSIZE);
+	write2(0, db->fd, log, PGSIZE * log->n);
+	write2(LOGDATASIZE, db->fd, &log->addr, PGSIZE * 2);
 	write2(LOGSIZE - PGSIZE, db->fd, &(log->commit), PGSIZE);
 	free(log);
 	flock(db->fd, LOCK_UN);
