@@ -94,7 +94,7 @@ void check_log(struct kvdb *db)
 	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
 	for(int i = 0; i < log->n; i++)
 	{
-		write2(log->addr[i], db->fd, log->data[i], PGSIZE);
+		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
 	}
 	log->commit = 0;	
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
@@ -183,7 +183,11 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
 	kvent_t *cur = find_key(db, key);	
-	if(cur == NULL)return NULL;
+	if(cur == NULL)
+	{
+		printf("no such key\n");
+		return NULL;
+	}
 	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
