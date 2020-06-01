@@ -91,7 +91,7 @@ void check_log(struct kvdb *db)
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
-	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
+	read2(DATAEND, db->fd, &log->addr[0], PGSIZE * 2);
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
@@ -159,7 +159,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 		for(int i = 0; i < log->n; i++, pos += PGSIZE)
 		{
 			log->addr[i] = pos;
-			printf("askhjvakjcba is 0x%zx\n", log->addr[i]);
 			if(i <= log->n - 2)
 			{
 				log->data[i].next = pos + PGSIZE;
