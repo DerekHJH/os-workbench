@@ -147,10 +147,9 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	panic_on(log->data[0].len != len, "\033[31mlog->data[0].len != len\n\033[0m");
 	kvent_t *cur = find_key(db, key);	
 
-	printf("log->n is %d\n", log->n);
-
 	if(cur == NULL)
 	{
+		printf("asckjasbkc\n");
 		int pos = lseek(db->fd, 0, SEEK_END);	
 		panic_on(pos % PGSIZE != 0, "\033[31mpos mod PGSIZE != 0\n\033[0m");
 		for(int i = 0; i < log->n; i++)
