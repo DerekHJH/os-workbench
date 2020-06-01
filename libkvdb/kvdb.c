@@ -87,7 +87,7 @@ void check_log(struct kvdb *db)
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(log->commit == 0)
 	{
-		//printf("no need to check log\n");
+		printf("no need to check log\n");
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
@@ -182,7 +182,6 @@ char *kvdb_get(struct kvdb *db, const char *key)
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
-	fsync(db->fd);
 	kvent_t *cur = find_key(db, key);	
 	if(cur == NULL)
 	{
