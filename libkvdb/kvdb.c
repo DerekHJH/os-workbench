@@ -170,7 +170,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 	}
 
-	printf("log->commit is si sisi si si %d\n", log->commit);
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
