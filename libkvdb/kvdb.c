@@ -106,7 +106,7 @@ kvent_t *find_key(struct kvdb *db, const char *key)
 	if(Flag == 0)return NULL;
 	else return cur;
 }
-int memmove(char *dest, const char *src, size_t n)
+int charmove(char *dest, const char *src, size_t n)
 {
 	int l = 0;
   for(l = 0; l < n; l++)
@@ -127,12 +127,12 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	log->data[0].len = strlen(value);
 	const char *temp = value;
 	int len = 0;
-	memmove(log->data[0].key, key, KSIZE);
-	len += memmove(log->data[0].value, temp, VSIZE);
+	charmove(log->data[0].key, key, KSIZE);
+	len += charmove(log->data[0].value, temp, VSIZE);
 	while(len < log->data[0].len)
 	{
 		temp = (char *)((size_t)value + len);
-		len += memmove(log->data[log->n].value, temp, BIGVSIZE);	
+		len += charmove(log->data[log->n].value, temp, BIGVSIZE);	
 		(log->n)++;
 	}
 	panic_on(log->data[0].len != len, "\033[31mlog->data[0].len != len\n\033[0m");
@@ -176,14 +176,14 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
-	memmove(temp, cur->value, VSIZE);
+	charmove(temp, cur->value, VSIZE);
 	if(cur->next == 0)len = strlen(temp);
 	else len = VSIZE;	
 	while(cur->next > 0)
 	{
 		read2(cur->next, db->fd, cur, PGSIZE);
 		temp = (char *)((size_t)ret + len);
-		memmove(temp, cur->value, BIGVSIZE);
+		charmove(temp, cur->value, BIGVSIZE);
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
