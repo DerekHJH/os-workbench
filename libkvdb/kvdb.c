@@ -154,6 +154,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	if(cur == NULL)
 	{
 		size_t pos = lseek(db->fd, 0, SEEK_END);	
+		printf("pos is 0x%zx\n", pos);
 		panic_on(pos % PGSIZE != 0, "\033[31mpos mod PGSIZE != 0\n\033[0m");
 		for(int i = 0; i < log->n; i++)
 		{
