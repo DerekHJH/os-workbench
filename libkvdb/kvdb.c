@@ -84,6 +84,7 @@ void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
 	read2(ADDREND, db->fd, &log->commit, PGSIZE);
+	printf("commit is %d, n is \n", log->commit, log->n);
 	if(log->commit == 0)
 	{
 		printf("no need to check log\n");
@@ -173,7 +174,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
-	printf("ADDREND is 0x%zx\n", ADDREND);
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
