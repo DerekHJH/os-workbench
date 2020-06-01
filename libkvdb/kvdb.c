@@ -35,7 +35,8 @@ typedef struct _kvent
 	};
 }__attribute__((packed)) kvent_t;
 #define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
-#define COMMIT (LOGDATASIZE + 2 * PGSIZE)
+#define DATAEND = (LOGDATASIZE * PGSIZE)
+#define ADDREND (DATAEND + 2 * PGSIZE)
 typedef struct _log
 {	
 	kvent_t data[LOGDATASIZE];
@@ -55,6 +56,7 @@ struct kvdb *kvdb_open(const char *filename)
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
 	panic_on(sizeof(log_t) != 2 * PGSIZE * PGSIZE, "\033[31msizeof(log_t) != PGSIZE * PGSIZE\n\033[0m");
+	panic_on(LOGSIZE - PGSIZE != ADDREND, "\033[31mLOGSIZE - PGSIZE != ADDREND\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
 	if(cur->fd <= 0)return NULL;
@@ -88,7 +90,7 @@ void check_log(struct kvdb *db)
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
-	read2(LOGDATASIZE, db->fd, log->addr, PGSIZE * 2);
+	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
 	printf("log->n is %d\n", log->n);
 	for(int i = 0; i < log->n; i++)
 	{
