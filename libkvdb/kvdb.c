@@ -56,7 +56,7 @@ struct kvdb *kvdb_open(const char *filename)
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
 	if(cur->fd <= 0)return NULL;
-	return NULL;
+	return cur;
 }
 
 int kvdb_close(struct kvdb *db) 
@@ -86,7 +86,7 @@ void check_log(struct kvdb *db)
 		write2(log->addr[i], db->fd, &log->data[i], sizeof(PGSIZE));
 	}
 	log->commit = 0;	
-	write2(0, db->fd, log, sizeof(log_t));
+	write2(LOGSIZE - PGSIZE, db->fd, &log->commit, sizeof(int));
 	free(log);
 	return;
 }
@@ -106,6 +106,16 @@ kvent_t *find_key(struct kvdb *db, const char *key)
 	if(Flag == 0)return NULL;
 	else return cur;
 }
+int memmove(char *dest, const char *src, size_t n)
+{
+	int l = 0;
+  for(l = 0; l < n; l++)
+	{
+		dest[l] = src[l];
+		if(dest[l] == '\0')break;
+	}
+  return min(n, l);
+}
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
 	flock(db->fd, LOCK_EX);
@@ -117,9 +127,41 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	log->data[0].len = strlen(value);
 	const char *temp = value;
 	int len = 0;
-	sprintf(log->data[0].key, key, strlen(key));
-	sprintf(log->data[0].value, value, min(VSIZE, strlen(value)));
+	memmove(log->data[0].key, key, KSIZE);
+	len += memmove(log->data[0].value, temp, VSIZE);
+	while(len < log->data[0].len)
+	{
+		temp = (char *)((size_t)value + len);
+		len += memmove(log->data[log->n].value, temp, BIGVSIZE);	
+		(log->n)++;
+	}
+	panic_on(log->data[0].len != len, "\033[31mlog->data[0].len != len\n\033[0m");
+	kvent_t *cur = find_key(db, key);	
 
+
+	if(cur == NULL)
+	{
+		int pos = lseek(db->fd, 0, SEEK_END);	
+		panic_on(pos % PGSIZE != 0, "\033[31mpos % PGSIZE != 0\n\033[0m");
+		for(int i = 0; i < log->n; i++)
+		{
+			log->addr[i] = pos;
+			if(i <= log->n - 2)
+			{
+				log->data[i].next = pos + PGSIZE;
+			}
+			else log->data[i].next = 0;
+
+			if(i != 0)log->data[i].len = 0;
+		}
+	}
+	else
+	{
+
+	}
+
+	write2(0, db->fd, log, LOGSIZE - PGSIZE);
+	write2(LOGSIZE - PGSIZE, db->fd, &(log->commit), PGSIZE);
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
@@ -134,18 +176,18 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
-	sprintf(temp, cur->value, VSIZE);
+	memmove(temp, cur->value, VSIZE);
 	if(cur->next == 0)len = strlen(temp);
 	else len = VSIZE;	
 	while(cur->next > 0)
 	{
 		read2(cur->next, db->fd, cur, PGSIZE);
 		temp = (char *)((size_t)ret + len);
-		sprintf(temp, cur->value, BIGVSIZE);
+		memmove(temp, cur->value, BIGVSIZE);
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
-	panic_on(cur->len != len, "\033[31cur->len != len\n\033[0m");
+	panic_on(cur->len != len, "\033[31mcur->len != len\n\033[0m");
 	free(cur);
 	flock(db->fd, LOCK_UN);
   return ret;
