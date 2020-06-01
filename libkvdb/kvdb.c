@@ -172,9 +172,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	}
 
 	write2(0, db->fd, log, PGSIZE * log->n);
-	log->addr[PGSIZE * 2 - 1] = 65656565;
-	log->commit = 65;
-	log->n = 66;
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
