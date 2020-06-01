@@ -134,7 +134,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	check_log(db);
 	
 	log_t *log = malloc(sizeof(log_t));
-	log->commit = 65;
+	log->commit = 1;
 	log->n = 1;
 	log->data[0].len = strlen(value);
 	const char *temp = value;
@@ -172,6 +172,9 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	}
 
 	write2(0, db->fd, log, PGSIZE * log->n);
+	log->addr[PGSIZE * 2 - 1] = 65656565;
+	log->commit = 65;
+	log->n = 66;
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
