@@ -94,6 +94,7 @@ void check_log(struct kvdb *db)
 	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
 	for(int i = 0; i < log->n; i++)
 	{
+		printf("haha is %s\n", log->data[i].value);
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
 	}
 	log->commit = 0;	
