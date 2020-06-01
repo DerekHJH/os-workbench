@@ -91,11 +91,11 @@ void check_log(struct kvdb *db)
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
-	read2(DATAEND, db->fd, &log->addr[0], PGSIZE * 2);
+	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
-		printf("0x%zx\n", log->addr[i]);
+		//printf("0x%zx\n", log->addr[i]);
 	}
 	log->commit = 0;	
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
@@ -176,6 +176,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
+	sleep(5);
 	flock(db->fd, LOCK_UN);
   return 0;
 }
