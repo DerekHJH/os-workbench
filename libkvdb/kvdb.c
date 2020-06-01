@@ -81,6 +81,7 @@ void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
 	read2(LOGSIZE - PGSIZE, db->fd, &log->commit, PGSIZE);
+	printf("sakhxvasj\n");
 	if(log->commit == 0)return;
 	read2(0, db->fd, log, log->n * PGSIZE);
 	read2(LOGDATASIZE, db->fd, log->addr, PGSIZE * 2);
