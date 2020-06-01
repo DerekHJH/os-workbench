@@ -186,6 +186,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	if(cur == NULL)
 	{
 		printf("no such key\n");
+		flock(db->fd, LOCK_UN);
 		return NULL;
 	}
 	char *ret = malloc(cur->len + 1);
