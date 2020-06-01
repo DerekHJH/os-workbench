@@ -80,14 +80,16 @@ void write2(off_t offset, int fd, void *buf, size_t count)
 void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
-	read2(0, db->fd, log, sizeof(log_t));
+	read2(LOGSIZE - PGSIZE, db->fd, &log->commit, PGSIZE);
 	if(log->commit == 0)return;
+	read2(0, db->fd, log, log->n * PGSIZE);
+	read2(LOGDATASIZE, db->fd, log->addr, PGSIZE * 2);
 	for(int i = 0; i < log->n; i++)
 	{
-		write2(log->addr[i], db->fd, &log->data[i], sizeof(PGSIZE));
+		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
 	}
 	log->commit = 0;	
-	write2(LOGSIZE - PGSIZE, db->fd, &log->commit, sizeof(int));
+	write2(LOGSIZE - PGSIZE, db->fd, &log->commit, PGSIZE);
 	free(log);
 	return;
 }
