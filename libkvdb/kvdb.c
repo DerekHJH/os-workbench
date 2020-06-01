@@ -182,6 +182,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
+	fsync(db->fd);
 	kvent_t *cur = find_key(db, key);	
 	if(cur == NULL)
 	{
