@@ -23,7 +23,7 @@ int main()
   kvdb_put(db, key, "three-easy-pieces");
   //value = kvdb_get(db, key); 
   kvdb_close(db);
-  printf("[%s]: [%s]\n", key, value);
-  free(value);
+  //printf("[%s]: [%s]\n", key, value);
+  //free(value);
   return 0;
 }
