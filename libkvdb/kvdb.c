@@ -35,6 +35,7 @@ typedef struct _kvent
 	};
 }__attribute__((packed)) kvent_t;
 #define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
+#define COMMIT (LOGDATASIZE + 2 * PGSIZE)
 typedef struct _log
 {	
 	kvent_t data[LOGDATASIZE];
@@ -170,8 +171,8 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(LOGDATASIZE, db->fd, &log->addr, PGSIZE * 2);
 	log->commit = 1;
-	write2(LOGSIZE - PGSIZE, db->fd, &(log->commit), PGSIZE);
-	printf("addr is 0x%p\n", &(log->commit));
+	write2(LOGSIZE - PGSIZE, db->fd, &log->commit, PGSIZE);
+	printf("addr is 0x%p\n", &log->commit);
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
