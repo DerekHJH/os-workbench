@@ -133,6 +133,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	{
 		temp = (char *)((size_t)value + len);
 		len += charmove(log->data[log->n].value, temp, BIGVSIZE);	
+		log->data[log->n].len = 0;
 		(log->n)++;
 	}
 	panic_on(log->data[0].len != len, "\033[31mlog->data[0].len != len\n\033[0m");
@@ -151,12 +152,11 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 				log->data[i].next = pos + PGSIZE;
 			}
 			else log->data[i].next = 0;
-
-			if(i != 0)log->data[i].len = 0;
 		}
 	}
 	else
 	{
+
 
 	}
 
