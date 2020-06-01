@@ -84,7 +84,7 @@ void check_log(struct kvdb *db)
 	if(log->commit == 0)return;
 	read2(0, db->fd, log, log->n * PGSIZE);
 	read2(LOGDATASIZE, db->fd, log->addr, PGSIZE * 2);
-	printf("log->n is %d\n", log->n);
+	//printf("log->n is %d\n", log->n);
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
@@ -166,6 +166,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(LOGDATASIZE, db->fd, &log->addr, PGSIZE * 2);
+	log->commit = 1;
 	write2(LOGSIZE - PGSIZE, db->fd, &(log->commit), PGSIZE);
 	free(log);
 	flock(db->fd, LOCK_UN);
