@@ -36,7 +36,7 @@ typedef struct _kvent
 }__attribute__((packed)) kvent_t;
 #define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
 #define DATAEND (LOGDATASIZE * PGSIZE)
-#define ADDREND (DATAEND + 2 * PGSIZE)
+#define ADDREND (DATAEND + 2 * PGSIZE * sizeof(size_t))
 typedef struct _log
 {	
 	kvent_t data[LOGDATASIZE];
