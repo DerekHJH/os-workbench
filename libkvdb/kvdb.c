@@ -52,6 +52,18 @@ typedef struct kvdb
 	int fd;
 }kvdb_t;
 
+void read2(off_t offset, int fd, void *buf, size_t count)
+{
+	lseek(fd, offset, SEEK_SET);
+	read(fd, buf, count);
+}
+void write2(off_t offset, int fd, void *buf, size_t count)
+{
+	lseek(fd, offset, SEEK_SET);
+	write(fd, buf, count);
+	fsync(fd);
+}
+
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
@@ -72,17 +84,7 @@ int kvdb_close(struct kvdb *db)
 	free(db);
   return 0;
 }
-void read2(off_t offset, int fd, void *buf, size_t count)
-{
-	lseek(fd, offset, SEEK_SET);
-	read(fd, buf, count);
-}
-void write2(off_t offset, int fd, void *buf, size_t count)
-{
-	lseek(fd, offset, SEEK_SET);
-	write(fd, buf, count);
-	fsync(fd);
-}
+
 void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
