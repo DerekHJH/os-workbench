@@ -195,7 +195,6 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		flock(db->fd, LOCK_UN);
 		return NULL;
 	}
-	printf("cur len is %d\n", cur->len);
 	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
@@ -210,8 +209,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
-	panic_on(cur->len != len, "\033[31mcur->len != len\n\033[0m");
-	//printf("len is %d and cur->len is %d\n", len, cur->len);
+	panic_on(strlen(ret) != len, "\033[31mcur->len != len\n\033[0m");
 	free(cur);
 	flock(db->fd, LOCK_UN);
   return ret;
