@@ -175,7 +175,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	{
 		int i = 0;
 		log->addr[0] = lseek(db->fd, 0, SEEK_CUR) - PGSIZE;
-		panic_on(log->addr[0] % PGSIZE != 0, "\033[31mlog->addr[0] % PGSIZE != 0\n\033[0m");
+		panic_on(log->addr[0] % PGSIZE != 0, "\033[31mlog->addr[0] mod PGSIZE != 0\n\033[0m");
 		while(cur->next > 0 && i < log->n)
 		{
 			log->data[i].next = cur->next;
