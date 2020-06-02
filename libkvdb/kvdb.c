@@ -92,7 +92,7 @@ void check_log(struct kvdb *db)
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
 	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
-	printf("%zd\n", log->addr[0]);
+	printf("%zx\n", log->addr[0]);
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
