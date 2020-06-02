@@ -92,10 +92,10 @@ void check_log(struct kvdb *db)
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
 	read2(DATAEND, db->fd, log->addr, PGSIZE * 2);
-	printf("%zx\n", log->addr[0]);
+	//printf("%zx\n", log->addr[0]);
 	for(int i = 0; i < log->n; i++)
 	{
-		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
+		write2(0x2000000, db->fd, &log->data[i], PGSIZE);
 		//printf("0x%zx\n", log->addr[i]);
 	}
 	log->commit = 0;	
@@ -108,10 +108,10 @@ kvent_t *find_key(struct kvdb *db, const char *key)
 	lseek(db->fd, LOGSIZE, SEEK_SET);
   int Flag = 0;
   kvent_t *cur = malloc(sizeof(kvent_t));
-	printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
+	//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
   while(read(db->fd, cur, PGSIZE) > 0)
   {
-		printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
+		//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
   	if(cur->len > 0 && strcmp(cur->key, key) == 0)
   	{
   		Flag = 1;
