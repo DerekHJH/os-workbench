@@ -160,6 +160,8 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 		panic_on(pos % PGSIZE != 0, "\033[31mpos mod PGSIZE != 0\n\033[0m");
 		for(int i = 0; i < log->n; i++, pos += PGSIZE)
 		{
+
+			printf("heihihabs is 0x%zx\n", log->addr[0]);
 			log->addr[i] = pos;
 			if(i <= log->n - 2)
 			{
@@ -175,7 +177,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	}
 
 	write2(0, db->fd, log, PGSIZE * log->n);
-	printf("heihihabs is 0x%zx\n", log->addr[0]);
 	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
