@@ -108,7 +108,7 @@ kvent_t *find_key(struct kvdb *db, const char *key)
 	lseek(db->fd, LOGSIZE, SEEK_SET);
   int Flag = 0;
   kvent_t *cur = malloc(sizeof(kvent_t));
-	printf("offset is 0x%zx\n", lseek(db->fd, 0, SEEK_CUR));
+	printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
   while(read(db->fd, cur, PGSIZE) > 0)
   {
   	if(cur->len > 0 && strcmp(cur->key, key) == 0)
