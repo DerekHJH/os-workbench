@@ -100,7 +100,6 @@ void check_log(struct kvdb *db)
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
-		printf("0x%zx\n", log->addr[i]);
 	}
 	log->commit = 0;	
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
@@ -161,7 +160,6 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	if(cur == NULL)
 	{
 		size_t pos = lseek(db->fd, 0, SEEK_END);	
-		printf("pos is 0x%zx\n", pos);
 		panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
 		for(int i = 0; i < log->n; i++, pos += PGSIZE)
 		{
@@ -194,7 +192,6 @@ char *kvdb_get(struct kvdb *db, const char *key)
 	kvent_t *cur = find_key(db, key);	
 	if(cur == NULL)
 	{
-		printf("no such key\n");
 		flock(db->fd, LOCK_UN);
 		return NULL;
 	}
