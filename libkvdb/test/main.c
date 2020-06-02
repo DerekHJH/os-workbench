@@ -21,7 +21,7 @@ int main()
 	const char *key2 = "hjh";
 	char haha[4096 * 2];
 	for(int i = 0; i < 5000; i++)
-		haha[i] = 'H';
+		haha[i] = 'A' + i % 26;
 	haha[5000] = '\0';
   char *value;  
 	panic_on(!(db = kvdb_open("a.db")), "cannot open db");
