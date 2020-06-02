@@ -19,21 +19,21 @@ int main()
   struct kvdb *db;
   const char *key = "operating-systems";
 	const char *key2 = "hjh";
-	char haha[4096 * 2];
-	for(int i = 0; i < 5000; i++)
+	char haha[1024 * 1024 * 16];
+	for(int i = 0; i < 1204 * 1024 * 15; i++)
 		haha[i] = 'A' + i % 26;
-	haha[5000] = '\0';
+	haha[1024 * 1024 * 15] = '\0';
   char *value;  
 	panic_on(!(db = kvdb_open("a.db")), "cannot open db");
   kvdb_put(db, key, "three-easy-pieces");
 	kvdb_put(db, key2, haha);
   value = kvdb_get(db, key); 
-  printf("[%s]: [%s]\n", key, value);
+  //printf("[%s]: [%s]\n", key, value);
 	value = kvdb_get(db, key2);
-	printf("[%s]: [%s]\n", key2, value);
+	//printf("[%s]: [%s]\n", key2, value);
 	kvdb_put(db, key2, "three-easy-pieces");
 	value = kvdb_get(db, key2);
-	printf("[%s]: [%s]\n", key2, value);
+	//printf("[%s]: [%s]\n", key2, value);
   free(value);
   kvdb_close(db);
   return 0;
