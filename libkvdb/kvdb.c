@@ -173,8 +173,32 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	}
 	else
 	{
-		printf("To be implemented!!\n");
-
+		int i = 0;
+		log->addr[0] = lseek(db->fd, 0, SEEK_CUR) - PGSIZE;
+		panic_on(log->addr[0] % PGSIZE != 0, "\033[31mlog->addr[0] % PGSIZE != 0\n\033[0m");
+		while(cur->next > 0 && i < log->n)
+		{
+			log->data[i].next = cur->next;
+			i++;
+			log->addr[i] = cur->next;
+			read2(cur->next, db->fd, cur, PGSIZE);
+		}
+		if(cur->next == 0 && i == log->n - 1)log->data[i].next = 0;
+		else if(cur->next == 0)
+		{
+			size_t pos = lseek(db->fd, 0, SEEK_END);	
+      panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
+			log->data[i].next = pos;
+      for(i++; i < log->n; i++, pos += PGSIZE)
+      {
+      	log->addr[i] = pos;
+      	if(i <= log->n - 2)
+      	{
+      		log->data[i].next = pos + PGSIZE;
+      	}
+      	else log->data[i].next = 0;
+      }
+		}
 	}
 
 	write2(0, db->fd, log, PGSIZE * log->n);
