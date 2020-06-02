@@ -209,7 +209,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
-	panic_on(cur->len != len, "\033[31mcur->len != len\n\033[0m");
+	//panic_on(cur->len != len, "\033[31mcur->len != len\n\033[0m");
 	free(cur);
 	flock(db->fd, LOCK_UN);
   return ret;
