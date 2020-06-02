@@ -59,6 +59,9 @@ struct kvdb *kvdb_open(const char *filename)
 	panic_on(LOGSIZE - PGSIZE != ADDREND, "\033[31mLOGSIZE - PGSIZE != ADDREND\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+	kvent_t *start = malloc(sizeof(kvent_t)); 
+	write2(ADDREND, db->fd, start, PGSIZE);
+	free(start);
 	if(cur->fd <= 0)return NULL;
 	return cur;
 }
