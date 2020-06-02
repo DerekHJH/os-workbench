@@ -163,7 +163,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 			log->addr[i] = pos;
 
-			printf("heihihabs is 0x%zx\n", log->addr[0]);
+			printf(" i is %d, heihihabs is 0x%zx\n", i, log->addr[0]);
 			if(i <= log->n - 2)
 			{
 				log->data[i].next = pos + PGSIZE;
