@@ -177,6 +177,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(DATAEND, db->fd, &log->addr, PGSIZE * 2);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
+	check_log(db);
 	flock(db->fd, LOCK_UN);
   return 0;
 }
