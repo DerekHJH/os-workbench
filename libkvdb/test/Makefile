@@ -5,8 +5,9 @@ all: libkvdb-test-64 libkvdb-test-32
 run: libkvdb all
 	@echo "==== TEST 64 bit ===="
 	@LD_LIBRARY_PATH=.. ./libkvdb-test-64
-	@echo "==== TEST 32 bit ===="
-	@LD_LIBRARY_PATH=.. ./libkvdb-test-32
+	
+#@echo "==== TEST 32 bit ===="
+#@LD_LIBRARY_PATH=.. ./libkvdb-test-32
 
 libkvdb-test-64: main.c
 

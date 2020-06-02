@@ -92,7 +92,7 @@ void check_log(struct kvdb *db)
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(log->commit == 0)
 	{
-		printf("no need to check log\n");
+		//printf("no need to check log\n");
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
@@ -234,8 +234,7 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		if(cur->next == 0)len += strlen(temp);
 		else len += BIGVSIZE;	
 	}
-	//panic_on(strlen(ret) != len, "\033[31mstrlen(ret) != len\n\033[0m");
-	printf("len is %d and strlen(ret) is %zd\n", len, strlen(ret));
+	//printf("len is %d and strlen(ret) is %zd\n", len, strlen(ret));
 	free(cur);
 	flock(db->fd, LOCK_UN);
   return ret;
