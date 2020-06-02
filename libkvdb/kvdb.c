@@ -175,7 +175,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	}
 
 	write2(0, db->fd, log, PGSIZE * log->n);
-	printf("heihihabs is 0x%zx\n", log->addr[0]);
+	printf("heihihabs is 0x%zx\n", log->addr[1]);
 	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	free(log);
