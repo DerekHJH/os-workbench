@@ -19,7 +19,7 @@ int main()
   struct kvdb *db;
   const char *key = "operating-systems";
 	const char *key2 = "hjh";
-	const char haha[4096 * 2];
+	char haha[4096 * 2];
 	for(int i = 0; i < 5000; i++)
 		haha[i] = 'H';
 	haha[5000] = '\0';
