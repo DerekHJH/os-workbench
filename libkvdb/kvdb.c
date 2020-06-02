@@ -91,7 +91,7 @@ void check_log(struct kvdb *db)
 		return;
 	}
 	read2(0, db->fd, log, log->n * PGSIZE);
-	read2(DATAEND, db->fd, &log->addr[0], ADDREND - DATAEND);
+	read2(DATAEND, db->fd, log->addr, ADDREND - DATAEND);
 	for(int i = 0; i < log->n; i++)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
