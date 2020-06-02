@@ -14,12 +14,12 @@
 		}\
 	}while(0)
 
+char haha[1024 * 1024 * 16];
 int main() 
 {	
   struct kvdb *db;
   const char *key = "operating-systems";
 	const char *key2 = "hjh";
-	char haha[1024 * 1024 * 16];
 	for(int i = 0; i < 1204 * 1024 * 15; i++)
 		haha[i] = 'A' + i % 26;
 	haha[1024 * 1024 * 15] = '\0';
