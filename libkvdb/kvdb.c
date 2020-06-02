@@ -219,13 +219,14 @@ char *kvdb_get(struct kvdb *db, const char *key)
 		flock(db->fd, LOCK_UN);
 		return NULL;
 	}
+	int L = cur->len;
 	char *ret = malloc(cur->len + 1);
 	char *temp = ret;
 	int len = 0;
 	charmove(temp, cur->value, VSIZE);
 	if(cur->next == 0)len = strlen(temp);
 	else len = VSIZE;	
-	while(cur->next > 0)
+	while(cur->next > 0 && len < L)
 	{
 		read2(cur->next, db->fd, cur, PGSIZE);
 		temp = (char *)((size_t)ret + len);
