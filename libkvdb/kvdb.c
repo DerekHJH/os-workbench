@@ -84,6 +84,7 @@ void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
 	read2(ADDREND, db->fd, &log->commit, PGSIZE);
+	printf("ADDREND is %d, and DATAEND is %d\n", ADDREND, DATAEND);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(log->commit == 0)
 	{
