@@ -33,7 +33,7 @@ int main()
 	//kvdb_put(db, key2, haha);
   value = kvdb_get(db, key); 
   //printf("[%s]: [%s]\n", key, value);
-	value = kvdb_get(db, key2);
+	//value = kvdb_get(db, key2);
 	//printf("[%s]: [%s]\n", key2, value);
 	//kvdb_put(db, key2, "three-easy-pieces");
 	//value = kvdb_get(db, key2);
