@@ -128,7 +128,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	int len = strlen(value);
 	log.n = (len + PGSIZE - 1) / PGSIZE;
 	int Check = charmove(&log.data[0], value, len + 1);
-	panic(Check != len, "\033[31mCheck != len\033[0m\n");
+	panic_on(Check != len, "\033[31mCheck != len\033[0m\n");
 	
 	int k = find_key(db, key);	
 
