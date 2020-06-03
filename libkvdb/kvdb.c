@@ -72,7 +72,7 @@ struct kvdb *kvdb_open(const char *filename)
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	kvent_t *start = malloc(sizeof(kvent_t)); 
 	write2(ADDREND, cur->fd, start, PGSIZE);
-	fsync(db->fd);
+	fsync(cur->fd);
 	free(start);
 	if(cur->fd <= 0)return NULL;
 	return cur;
@@ -207,7 +207,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
 	fsync(db->fd);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
-	fsync(fd);
+	fsync(db->fd);
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
