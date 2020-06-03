@@ -16,36 +16,30 @@
 			assert(0);\
 		}\
 	}while(0)
+#define KSIZE 128
+#define KNUM 256
 #define PGSIZE 4096
-#define KSIZE (256 - sizeof(size_t) - sizeof(int))
-#define VSIZE (PGSIZE - 256)
-#define BIGVSIZE (PGSIZE - sizeof(size_t) - sizeof(int))
-typedef struct _kvent
+typedef struct _keytable
 {
-	size_t next;
-	int len; //>0 --- the start of the key-value mapping;
-	union
-	{
-		struct 
-		{
-			char key[KSIZE];
-			char value[VSIZE];	
-		};
-		char bigvalue[BIGVSIZE];
-	};
-}__attribute__((packed)) kvent_t;
-#define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
+	char key[KNUM][KSIZE];
+	long long start[KNUM];//start address in bytes
+	long long len[KNUM - 1];//number of blocks
+	long long keytot;	
+}__attribute__((packed)) keytable_t;
+keytable_t keytable;
+#define KEYTABLESIZE sizeof(keytable_t)
+#define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(long long) * 2)
 #define DATAEND (LOGDATASIZE * PGSIZE)
-#define ADDREND (DATAEND + 2 * PGSIZE * sizeof(size_t))
-#define UNRESER (2 * sizeof(int))
+#define ADDREND (DATAEND + 2 * PGSIZE * sizeof(long long))
 typedef struct _log
 {	
-	kvent_t data[LOGDATASIZE];
-	size_t addr[PGSIZE * 2];
+	char data[LOGDATASIZE][PGSIZE];
+	long long addr[PGSIZE * 2];
 	int commit;//1 --- committed, 0 --- not committed
   int n;//number of blocks to be wrriten
   char reserved[PGSIZE - 2 * sizeof(int)];
 }__attribute__((packed)) log_t;
+log_t log;
 #define LOGSIZE sizeof(log_t)
 
 typedef struct kvdb 
@@ -68,12 +62,12 @@ struct kvdb *kvdb_open(const char *filename)
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
 	panic_on(sizeof(log_t) != 2 * PGSIZE * PGSIZE, "\033[31msizeof(log_t) != PGSIZE * PGSIZE\n\033[0m");
 	panic_on(LOGSIZE - PGSIZE != ADDREND, "\033[31mLOGSIZE - PGSIZE != ADDREND\n\033[0m");
+	panic_on(KEYTABLESIZE % PGSIZE != 0, "\033[31mKEYTABLESIZE mod PGSIZE != 0\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	kvent_t *start = malloc(sizeof(kvent_t)); 
-	write2(ADDREND, cur->fd, start, PGSIZE);
+	int a = 0; 
+	write2(LOGSIZE - 4, cur->fd, &a, 4);
 	fsync(cur->fd);
-	free(start);
 	if(cur->fd <= 0)return NULL;
 	return cur;
 }
@@ -87,44 +81,33 @@ int kvdb_close(struct kvdb *db)
 
 void check_log(struct kvdb *db)
 {
-	log_t *log = malloc(sizeof(log_t));
-	read2(ADDREND, db->fd, &log->commit, UNRESER);
+	read2(ADDREND, db->fd, &log.commit, UNRESER);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
-	if(log->commit == 0)
+	if(log.commit == 0)
 	{
 		//printf("no need to check log\n");
 		return;
 	}
-	read2(0, db->fd, log, log->n * PGSIZE);
-	read2(DATAEND, db->fd, log->addr, ADDREND - DATAEND);
-	for(int i = 0; i < log->n; i++)
+	read2(0, db->fd, log, log.n * PGSIZE);
+	read2(DATAEND, db->fd, log.addr, ADDREND - DATAEND);
+	for(int i = 0; i < log.n; i++)
 	{
-		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
+		write2(log.addr[i], db->fd, &log.data[i], PGSIZE);
 	}
 	fsync(db->fd);
-	log->commit = 0;	
-	write2(ADDREND, db->fd, &log->commit, sizeof(int));
+	log.commit = 0;	
+	write2(ADDREND, db->fd, &log.commit, sizeof(int));
 	fsync(db->fd);
-	free(log);
 	return;
 }
-kvent_t *find_key(struct kvdb *db, const char *key)
+int find_key(struct kvdb *db, const char *key)
 {
-	lseek(db->fd, LOGSIZE, SEEK_SET);
-  int Flag = 0;
-  kvent_t *cur = malloc(sizeof(kvent_t));
-	//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
-  while(read(db->fd, cur, PGSIZE) > 0)
-  {
-		//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
-  	if(cur->len > 0 && strcmp(cur->key, key) == 0)
-  	{
-  		Flag = 1;
-  		break;
-  	}
-  }
-	if(Flag == 0)return NULL;
-	else return cur;
+	read2(LOGSIZE, db->fd, keytable, KEYTABLESIZE);
+	int i = 0;
+	for(i = 0; i < keytable.keytot; i++)
+		if(strcmp(keytable[i], key) == 0)break;
+	if(i >= keytable.keytot)return -1;
+	else return i;
 }
 int charmove(char *dest, const char *src, size_t n)
 {
@@ -141,25 +124,16 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	flock(db->fd, LOCK_EX);
 	check_log(db);
 	
-	log_t *log = malloc(sizeof(log_t));
-	log->commit = 1;
-	log->n = 1;
-	log->data[0].len = strlen(value);
-	const char *temp = value;
-	int len = 0;
-	charmove(log->data[0].key, key, KSIZE);
-	len += charmove(log->data[0].value, temp, VSIZE);
-	while(len < log->data[0].len)
-	{
-		temp = (char *)((size_t)value + len);
-		len += charmove(log->data[log->n].value, temp, BIGVSIZE);	
-		log->data[log->n].len = 0;
-		(log->n)++;
-	}
-	panic_on(log->data[0].len != len, "\033[31mlog->data[0].len != len\n\033[0m");
-	kvent_t *cur = find_key(db, key);	
+	log.commit = 1;
+	int len = strlen(value);
+	log.n = (len + PGSIZE - 1) / PGSIZE;
+	int Check = charmove(&log.data[0], value, len + 1);
+	panic(Check != len, "\033[31mCheck != len\033[0m\n");
+	
+	int k = find_key(db, key);	
 
-	if(cur == NULL)
+	/*
+	if(k == -1)
 	{
 		size_t pos = lseek(db->fd, 0, SEEK_END);	
 		panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
@@ -208,7 +182,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	fsync(db->fd);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	fsync(db->fd);
-	free(log);
+	*/
 	flock(db->fd, LOCK_UN);
   return 0;
 }
@@ -217,29 +191,14 @@ char *kvdb_get(struct kvdb *db, const char *key)
 {
 	flock(db->fd, LOCK_EX);
 	check_log(db);		
-	kvent_t *cur = find_key(db, key);	
-	if(cur == NULL)
+	int k = find_key(db, key);	
+	if(k == -1)
 	{
 		flock(db->fd, LOCK_UN);
 		return NULL;
 	}
-	int L = cur->len;
-	char *ret = malloc(cur->len + 1);
-	char *temp = ret;
-	int len = 0;
-	charmove(temp, cur->value, VSIZE);
-	if(cur->next == 0)len = strlen(temp);
-	else len = VSIZE;	
-	while(cur->next > 0 && len < L)
-	{
-		read2(cur->next, db->fd, cur, PGSIZE);
-		temp = (char *)((size_t)ret + len);
-		charmove(temp, cur->value, BIGVSIZE);
-		if(cur->next == 0)len += strlen(temp);
-		else len += BIGVSIZE;	
-	}
-	//printf("len is %d and strlen(ret) is %zd\n", len, strlen(ret));
-	free(cur);
+	char *ret = malloc(keytable.len[k] * PGSIZE);
+	read2(keytable.start[k], db->fd, ret, keytable.len[k] * PGSIZE);
 	flock(db->fd, LOCK_UN);
   return ret;
 }
