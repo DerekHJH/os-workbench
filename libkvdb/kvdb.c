@@ -114,7 +114,7 @@ kvent_t *find_key(struct kvdb *db, const char *key)
   int Flag = 0;
   kvent_t *cur = malloc(sizeof(kvent_t));
 	//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
-  while(read(db->fd, cur, 256) > 0)
+  while(read(db->fd, cur, PGSIZE) > 0)
   {
 		//printf("offset is 0x%lx\n", lseek(db->fd, 0, SEEK_CUR));
   	if(cur->len > 0 && strcmp(cur->key, key) == 0)
@@ -124,12 +124,7 @@ kvent_t *find_key(struct kvdb *db, const char *key)
   	}
   }
 	if(Flag == 0)return NULL;
-	else 
-	{
-		lseek(db->fd, -256, SEEK_CUR);
-		read(db->fd, cur, PGSIZE);
-		return cur;
-	}
+	else return cur;
 }
 int charmove(char *dest, const char *src, size_t n)
 {
