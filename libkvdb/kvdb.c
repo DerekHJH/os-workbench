@@ -37,6 +37,7 @@ typedef struct _kvent
 #define LOGDATASIZE (PGSIZE * 2 - 1 - sizeof(size_t) * 2)
 #define DATAEND (LOGDATASIZE * PGSIZE)
 #define ADDREND (DATAEND + 2 * PGSIZE * sizeof(size_t))
+#define UNRESER (2 * sizeof(int))
 typedef struct _log
 {	
 	kvent_t data[LOGDATASIZE];
@@ -61,9 +62,7 @@ void write2(off_t offset, int fd, void *buf, size_t count)
 {
 	lseek(fd, offset, SEEK_SET);
 	write(fd, buf, count);
-	fsync(fd);
 }
-
 struct kvdb *kvdb_open(const char *filename) 
 {
 	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
@@ -73,6 +72,7 @@ struct kvdb *kvdb_open(const char *filename)
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
 	kvent_t *start = malloc(sizeof(kvent_t)); 
 	write2(ADDREND, cur->fd, start, PGSIZE);
+	fsync(fd);
 	free(start);
 	if(cur->fd <= 0)return NULL;
 	return cur;
@@ -88,7 +88,7 @@ int kvdb_close(struct kvdb *db)
 void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
-	read2(ADDREND, db->fd, &log->commit, PGSIZE);
+	read2(ADDREND, db->fd, &log->commit, UNRESERV);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(log->commit == 0)
 	{
@@ -101,8 +101,10 @@ void check_log(struct kvdb *db)
 	{
 		write2(log->addr[i], db->fd, &log->data[i], PGSIZE);
 	}
+	fsync(fd);
 	log->commit = 0;	
-	write2(ADDREND, db->fd, &log->commit, PGSIZE);
+	write2(ADDREND, db->fd, &log->commit, sizeof(int));
+	fsync(fd);
 	free(log);
 	return;
 }
@@ -203,7 +205,9 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
+	fsync(fd);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
+	fsync(fd);
 	free(log);
 	flock(db->fd, LOCK_UN);
   return 0;
