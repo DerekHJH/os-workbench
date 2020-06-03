@@ -131,9 +131,15 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	
 	int k = find_key(db, key);	
 
+	
 	/*
-	if(k == -1)
+	if(k > 0 && keytable.len[k] >= Log.n)
 	{
+		
+
+
+	}
+
 		size_t pos = lseek(db->fd, 0, SEEK_END);	
 		panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
 		for(int i = 0; i < log->n; i++, pos += PGSIZE)
