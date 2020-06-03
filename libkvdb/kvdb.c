@@ -88,7 +88,7 @@ int kvdb_close(struct kvdb *db)
 void check_log(struct kvdb *db)
 {
 	log_t *log = malloc(sizeof(log_t));
-	read2(ADDREND, db->fd, &log->commit, UNRESERV);
+	read2(ADDREND, db->fd, &log->commit, UNRESER);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(log->commit == 0)
 	{
@@ -205,7 +205,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 
 	write2(0, db->fd, log, PGSIZE * log->n);
 	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
-	fsync(fd);
+	fsync(db->fd);
 	write2(ADDREND, db->fd, &log->commit, PGSIZE);
 	fsync(fd);
 	free(log);
