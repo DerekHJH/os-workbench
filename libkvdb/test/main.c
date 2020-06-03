@@ -14,7 +14,7 @@
 		}\
 	}while(0)
 
-char haha[1024 * 1024];
+char haha[1024 * 1024 * 15];
 int main() 
 {	
   struct kvdb *db;
@@ -23,7 +23,6 @@ int main()
 	for(int i = 0; i < 1024 * 1024 * 15; i++)
 		haha[i] = 'A' + i % 26;
 	haha[1024 * 1024 * 15] = '\0';
-	/*
   char *value;  
 	panic_on(!(db = kvdb_open("a.db")), "cannot open db");
   kvdb_put(db, key, "three-easy-pieces");
@@ -37,6 +36,5 @@ int main()
 	//printf("[%s]: [%s]\n", key2, value);
   free(value);
   kvdb_close(db);
-	*/
   return 0;
 }
