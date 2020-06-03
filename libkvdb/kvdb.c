@@ -101,7 +101,7 @@ void check_log(struct kvdb *db)
 }
 int find_key(struct kvdb *db, const char *key)
 {
-	read2(LOGSIZE, db->fd, keytable, KEYTABLESIZE);
+	read2(LOGSIZE, db->fd, &keytable, KEYTABLESIZE);
 	int i = 0;
 	for(i = 0; i < keytable.keytot; i++)
 		if(strcmp(keytable[i], key) == 0)break;
