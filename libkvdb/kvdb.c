@@ -80,7 +80,7 @@ int kvdb_close(struct kvdb *db)
 
 void check_log(struct kvdb *db)
 {
-	read2(ADDREND, db->fd, &Log.commit, UNRESER);
+	read2(ADDREND, db->fd, &Log.commit, PGSIZE);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
 	if(Log.commit == 0)
 	{
