@@ -39,7 +39,7 @@ typedef struct _log
   int n;//number of blocks to be wrriten
   char reserved[PGSIZE - 2 * sizeof(int)];
 }__attribute__((packed)) log_t;
-log_t log;
+log_t Log;
 #define LOGSIZE sizeof(log_t)
 
 typedef struct kvdb 
@@ -59,7 +59,6 @@ void write2(off_t offset, int fd, void *buf, size_t count)
 }
 struct kvdb *kvdb_open(const char *filename) 
 {
-	panic_on(sizeof(kvent_t) != PGSIZE, "\033[31msizeof(kvent_t) != PGSIZE\n\033[0m");
 	panic_on(sizeof(log_t) != 2 * PGSIZE * PGSIZE, "\033[31msizeof(log_t) != PGSIZE * PGSIZE\n\033[0m");
 	panic_on(LOGSIZE - PGSIZE != ADDREND, "\033[31mLOGSIZE - PGSIZE != ADDREND\n\033[0m");
 	panic_on(KEYTABLESIZE % PGSIZE != 0, "\033[31mKEYTABLESIZE mod PGSIZE != 0\n\033[0m");
@@ -81,22 +80,22 @@ int kvdb_close(struct kvdb *db)
 
 void check_log(struct kvdb *db)
 {
-	read2(ADDREND, db->fd, &log.commit, UNRESER);
+	read2(ADDREND, db->fd, &Log.commit, UNRESER);
 	//printf("commit is %d, n is %d\n", log->commit, log->n);
-	if(log.commit == 0)
+	if(Log.commit == 0)
 	{
 		//printf("no need to check log\n");
 		return;
 	}
-	read2(0, db->fd, log, log.n * PGSIZE);
-	read2(DATAEND, db->fd, log.addr, ADDREND - DATAEND);
-	for(int i = 0; i < log.n; i++)
+	read2(0, db->fd, &Log, Log.n * PGSIZE);
+	read2(DATAEND, db->fd, Log.addr, ADDREND - DATAEND);
+	for(int i = 0; i < Log.n; i++)
 	{
-		write2(log.addr[i], db->fd, &log.data[i], PGSIZE);
+		write2(Log.addr[i], db->fd, &Log.data[i], PGSIZE);
 	}
 	fsync(db->fd);
-	log.commit = 0;	
-	write2(ADDREND, db->fd, &log.commit, sizeof(int));
+	Log.commit = 0;	
+	write2(ADDREND, db->fd, &Log.commit, sizeof(int));
 	fsync(db->fd);
 	return;
 }
@@ -124,10 +123,10 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	flock(db->fd, LOCK_EX);
 	check_log(db);
 	
-	log.commit = 1;
+	Log.commit = 1;
 	int len = strlen(value);
-	log.n = (len + PGSIZE - 1) / PGSIZE;
-	int Check = charmove(&log.data[0], value, len + 1);
+	Log.n = (len + PGSIZE - 1) / PGSIZE;
+	int Check = charmove(&Log.data[0], value, len + 1);
 	panic_on(Check != len, "\033[31mCheck != len\033[0m\n");
 	
 	int k = find_key(db, key);	
