@@ -19,6 +19,7 @@
 #define KSIZE 128
 #define KNUM 256  //actually there are only 255 keys
 #define PGSIZE 4096
+#define KEYEND (KNUM * KSIZE)
 typedef struct _keytable
 {
 	char key[KNUM][KSIZE];
@@ -91,11 +92,11 @@ void check_log(struct kvdb *db)
 	read2(DATAEND, db->fd, Log.addr, ADDREND - DATAEND);
 	for(int i = 0; i < Log.n; i++)
 	{
-		write2(Log.addr[i], db->fd, Log.data[i], PGSIZE);
+		write2(Log.addr[i], db->fd, &Log.data[i][0], PGSIZE);
 	}
 	fsync(db->fd);
 	Log.commit = 0;	
-	write2(ADDREND, db->fd, &Log.commit, sizeof(int));
+	write2(ADDREND, db->fd, &Log.commit, PGSIZE);
 	fsync(db->fd);
 	return;
 }
@@ -108,16 +109,6 @@ int find_key(struct kvdb *db, const char *key)
 	if(i >= keytable.keytot)return -1;
 	else return i;
 }
-int charmove(char *dest, const char *src, size_t n)
-{
-	int l = 0;
-  for(l = 0; l < n; l++)
-	{
-		dest[l] = src[l];
-		if(dest[l] == '\0')break;
-	}
-  return min(n, l);
-}
 int kvdb_put(struct kvdb *db, const char *key, const char *value) 
 {
 	flock(db->fd, LOCK_EX);
@@ -126,68 +117,57 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	Log.commit = 1;
 	int len = strlen(value);
 	Log.n = (len + PGSIZE - 1) / PGSIZE;
-	int Check = charmove(&Log.data[0][0], value, len + 1);
+	int Check = memmove(&Log.data[0][0], value, len + 1);
 	panic_on(Check != len, "\033[31mCheck != len\033[0m\n");
 	
 	int k = find_key(db, key);	
 
 	
-	/*
+	
 	if(k > 0 && keytable.len[k] >= Log.n)
 	{
-		
-
-
-	}
-
-		size_t pos = lseek(db->fd, 0, SEEK_END);	
-		panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
-		for(int i = 0; i < log->n; i++, pos += PGSIZE)
-		{
-			log->addr[i] = pos;
-			if(i <= log->n - 2)
-			{
-				log->data[i].next = pos + PGSIZE;
-			}
-			else log->data[i].next = 0;
-		}
+		long long pos = keytable.start[k];
+		for(int i = 0; i < Log.n; i++, pos += PGSIZE)
+		  Log.addr[i] = pos;	
 	}
 	else
 	{
-		int i = 0;
-		log->addr[0] = lseek(db->fd, 0, SEEK_CUR) - PGSIZE;
-		panic_on(log->addr[0] % PGSIZE != 0, "\033[31mlog->addr[0] mod PGSIZE != 0\n\033[0m");
-		while(cur->next > 0 && i < log->n)
+		long long pos = lseek(db->fd, 0, SEEK_END);	
+		long long start = pos;
+    panic_on(pos % PGSIZE != 0 || pos < LOGSIZE + KEYTABLESIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE + KEYTABLESIZE\n\033[0m");
+    for(int i = 0; i < Log.n; i++, pos += PGSIZE)
+    	Log.addr[i] = pos;
+		if(k > 0)
 		{
-			log->data[i].next = cur->next;
-			i++;
-			log->addr[i] = cur->next;
-			read2(cur->next, db->fd, cur, PGSIZE);
+			keytable.len[k] = Log.n;	
+			keytable.start[k] = start;
+			memmove(&Log.data[Log.n][0], &keytable.start[0], PGSIZE);	
+			Log.addr[Log.n] = KEYEND + LOGSIZE; 
+			Log.n++;
 		}
-		if(cur->next == 0 && i == log->n - 1)log->data[i].next = 0;
-		else if(cur->next == 0)
+		else
 		{
-			size_t pos = lseek(db->fd, 0, SEEK_END);	
-      panic_on(pos % PGSIZE != 0 || pos < LOGSIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE\n\033[0m");
-			log->data[i].next = pos;
-      for(i++; i < log->n; i++, pos += PGSIZE)
-      {
-      	log->addr[i] = pos;
-      	if(i <= log->n - 2)
-      	{
-      		log->data[i].next = pos + PGSIZE;
-      	}
-      	else log->data[i].next = 0;
-      }
+			k = keytable.keytot;
+			krytable.keytot++;
+			keytable.len[k] = Log.n;	
+      keytable.start[k] = start;
+			memmove(keytable.key[k], key, strlen(key));
+
+			memmove(&Log.data[Log.n][0], &keytable.start[0], PGSIZE);	
+			Log.addr[Log.n] = KEYEND + LOGSIZE; 
+			Log.n++;
+			long long temp = k - k % (PGSIZE / KSIZE);
+			memmove(&Log.data[Log.n][0], keytable.key[temp], PGSIZE);	
+			Log.addr[Log.n] = temp * KSIZE + LOGSIZE; 
+			Log.n++;
 		}
 	}
 
-	write2(0, db->fd, log, PGSIZE * log->n);
-	write2(DATAEND, db->fd, &log->addr, ADDREND - DATAEND);
+	write2(0, db->fd, &Log, PGSIZE * Log.n);
+	write2(DATAEND, db->fd, &Log.addr[0], ADDREND - DATAEND);
 	fsync(db->fd);
-	write2(ADDREND, db->fd, &log->commit, PGSIZE);
+	write2(ADDREND, db->fd, &Log.commit, PGSIZE);
 	fsync(db->fd);
-	*/
 	flock(db->fd, LOCK_UN);
   return 0;
 }
