@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <pthread.h>
 #define max(a, b) (a > b ? a: b)
 #define panic_on(cond, s)\
 	do\
