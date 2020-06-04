@@ -117,12 +117,9 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	Log.commit = 1;
 	int len = strlen(value);
 	Log.n = (len + PGSIZE - 1) / PGSIZE;
-	int Check = memmove(&Log.data[0][0], value, len + 1);
-	panic_on(Check != len, "\033[31mCheck != len\033[0m\n");
+	memmove(&Log.data[0][0], value, len + 1);
 	
 	int k = find_key(db, key);	
-
-	
 	
 	if(k > 0 && keytable.len[k] >= Log.n)
 	{
@@ -148,7 +145,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 		else
 		{
 			k = keytable.keytot;
-			krytable.keytot++;
+			keytable.keytot++;
 			keytable.len[k] = Log.n;	
       keytable.start[k] = start;
 			memmove(keytable.key[k], key, strlen(key));
