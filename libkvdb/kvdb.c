@@ -65,8 +65,8 @@ struct kvdb *kvdb_open(const char *filename)
 	panic_on(KEYTABLESIZE % PGSIZE != 0, "\033[31mKEYTABLESIZE mod PGSIZE != 0\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	int a = 0; 
-	write2(LOGSIZE - 4, cur->fd, &a, 4);
+	long long a = 0; 
+	write2(LOGSIZE + KEYTABLESIZE- 8, cur->fd, &a, 8);
 	fsync(cur->fd);
 	if(cur->fd <= 0)return NULL;
 	return cur;
