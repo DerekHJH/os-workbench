@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <pthread.h>
-#define min(a, b) (a < b ? a: b)
+#define max(a, b) (a > b ? a: b)
 #define panic_on(cond, s)\
 	do\
 	{\
@@ -65,9 +65,6 @@ struct kvdb *kvdb_open(const char *filename)
 	panic_on(KEYTABLESIZE % PGSIZE != 0, "\033[31mKEYTABLESIZE mod PGSIZE != 0\n\033[0m");
 	kvdb_t *cur = malloc(sizeof(kvdb_t));
 	cur->fd = open(filename, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	long long a = 0; 
-	write2(LOGSIZE + KEYTABLESIZE- 8, cur->fd, &a, 8);
-	fsync(cur->fd);
 	if(cur->fd <= 0)return NULL;
 	return cur;
 }
@@ -130,6 +127,7 @@ int kvdb_put(struct kvdb *db, const char *key, const char *value)
 	else
 	{
 		long long pos = lseek(db->fd, 0, SEEK_END);	
+		pos = max(pos, LOGSIZE + KEYTABLESIZE);
 		long long start = pos;
     panic_on(pos % PGSIZE != 0 || pos < LOGSIZE + KEYTABLESIZE, "\033[31mpos mod PGSIZE != 0 || pos < LOGSIZE + KEYTABLESIZE\n\033[0m");
     for(int i = 0; i < Log.n; i++, pos += PGSIZE)
