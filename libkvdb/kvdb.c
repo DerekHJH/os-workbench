@@ -17,7 +17,7 @@
 		}\
 	}while(0)
 #define KSIZE 128
-#define KNUM 256
+#define KNUM 256  //actually there are only 255 keys
 #define PGSIZE 4096
 typedef struct _keytable
 {
@@ -91,7 +91,7 @@ void check_log(struct kvdb *db)
 	read2(DATAEND, db->fd, Log.addr, ADDREND - DATAEND);
 	for(int i = 0; i < Log.n; i++)
 	{
-		write2(Log.addr[i], db->fd, &Log.data[i], PGSIZE);
+		write2(Log.addr[i], db->fd, Log.data[i], PGSIZE);
 	}
 	fsync(db->fd);
 	Log.commit = 0;	
