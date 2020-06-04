@@ -32,11 +32,11 @@ int main()
 	panic_on(!(db = kvdb_open("a.db")), "cannot open db");
 	panic_on(!(db2 = kvdb_open("a.db")), "cannot open db2");
   kvdb_put(db, key, "three-easy-pieces");
-	kvdb_put(db2, key2, xixi);
+	kvdb_put(db2, key2, haha);
   value = kvdb_get(db, key); 
   printf("[%s]: [%s]\n", key, value);
 	value = kvdb_get(db, key2);
-	printf("[%s]: [%s]\n", key2, value);
+	//printf("[%s]: [%s]\n", key2, value);
 	//kvdb_put(db, key2, "three-easy-pieces");
 	//value = kvdb_get(db, key2);
 	//printf("[%s]: [%s]\n", key2, value);
