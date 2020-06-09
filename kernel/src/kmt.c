@@ -117,6 +117,14 @@ static void kmt_teardown(task_t *task)
 	pmm->free(task);
 }
 
+static _Context *kmt_context_save(_Event ev, _Context *ctx)
+{
+	kmt->spin_lock(&taskop.lock); 
+	Current->context = ctx;       
+	kmt->spin_unlock(&taskop.lock); 
+	return NULL;
+}
+
 static _Context *kmt_schedule(_Event ev, _Context *ctx)
 {
 	kmt->spin_lock(&taskop.lock); 
@@ -170,6 +178,7 @@ static void kmt_init()
 		cpuinfo[i].idle.context = NULL;	
 	}
 	/*==========on_orq=================*/
+	os->on_irq(-999999999, _EVENT_NULL, kmt_context_save);
 	os->on_irq(999999999, _EVENT_NULL, kmt_schedule);
 }
 
