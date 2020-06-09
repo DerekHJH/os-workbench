@@ -12,11 +12,13 @@
 #define O_RDWR    00000002
 #define O_CREAT   00000100
 
-struct ufs_stat {
+struct ufs_stat 
+{
   uint32_t id, type, size;
 };
 
-struct ufs_dirent {
+struct ufs_dirent 
+{
   uint32_t inode;
   char name[28];
 } __attribute__((packed));
