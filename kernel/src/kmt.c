@@ -88,27 +88,6 @@ static void kmt_sem_signal(sem_t *sem)
   kmt_spin_unlock(&(sem->lock));
 }
 
-static void kmt_init()
-{
-	/*==========initialize taskop===========*/
-	kmt_spin_init(&taskop.lock, "taskop.lock");
-	taskop.cpu = 0;
-	/*==========initialize cpu=========*/
-	for(int i = 0; i < _ncpu(); i++)
-	{
-		cpuinfo[i].current = &cpuinfo[i].idle;
-		cpuinfo[i].head = &cpuinfo[i].idle;
-		cpuinfo[i].tail = &cpuinfo[i].idle;
-		
-		cpuinfo[i].idle.name = "idle";
-		cpuinfo[i].idle.cpu = i;
-		cpuinfo[i].idle.stat = READY;
-		cpuinfo[i].idle.last = i;
-		cpuinfo[i].idle.prev = NULL;
-		cpuinfo[i].idle.next = NULL;
-		cpuinfo[i].idle.context = NULL;	
-	}
-}
 static int kmt_create(task_t *task, const char *name, void (*entry)(void *arg), void *arg)
 {
 	kmt_spin_lock(&taskop.lock);
@@ -138,7 +117,7 @@ static void kmt_teardown(task_t *task)
 	pmm->free(task);
 }
 
-_Context *kmt_schedule(_Event ev, _Context *ctx)
+static _Context *kmt_schedule(_Event ev, _Context *ctx)
 {
 	kmt->spin_lock(&taskop.lock); 
   Current->context = ctx;
@@ -170,6 +149,32 @@ _Context *kmt_schedule(_Event ev, _Context *ctx)
   kmt->spin_unlock(&taskop.lock);
   return Current->context;
 }
+static void kmt_init()
+{
+	/*==========initialize taskop===========*/
+	kmt_spin_init(&taskop.lock, "taskop.lock");
+	taskop.cpu = 0;
+	/*==========initialize cpu=========*/
+	for(int i = 0; i < _ncpu(); i++)
+	{
+		cpuinfo[i].current = &cpuinfo[i].idle;
+		cpuinfo[i].head = &cpuinfo[i].idle;
+		cpuinfo[i].tail = &cpuinfo[i].idle;
+		
+		cpuinfo[i].idle.name = "idle";
+		cpuinfo[i].idle.cpu = i;
+		cpuinfo[i].idle.stat = READY;
+		cpuinfo[i].idle.last = i;
+		cpuinfo[i].idle.prev = NULL;
+		cpuinfo[i].idle.next = NULL;
+		cpuinfo[i].idle.context = NULL;	
+	}
+	/*==========on_orq=================*/
+	os->on_irq(999999999, _EVENT_NULL, kmt_schedule);
+}
+
+
+
 MODULE_DEF(kmt) = 
 {
   .init = kmt_init,
