@@ -46,6 +46,8 @@ static int vfs_chdir(const char *path)
 }
 static int vfs_dup(int fd)
 {
+	uint a = 2;
+	printf("%d", a);
 	return 0;
 }
 
