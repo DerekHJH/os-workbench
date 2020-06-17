@@ -10,7 +10,8 @@
 #define DEV_CNT(...) + 1
 device_t *devices[0 DEVICES(DEV_CNT)];
 
-void *dev_malloc(size_t size) {
+void *dev_malloc(size_t size) 
+{
   static char dev_mem[8 << 20]; // 8 MiB reserved memory for devices
   static char *start = dev_mem;
   start += size;
@@ -18,7 +19,8 @@ void *dev_malloc(size_t size) {
   return start - size;
 }
 
-static device_t *dev_lookup(const char *name) {
+static device_t *dev_lookup(const char *name) 
+{
   for (int i = 0; i < LENGTH(devices); i++) 
     if (strcmp(devices[i]->name, name) == 0)
       return devices[i];
@@ -26,9 +28,11 @@ static device_t *dev_lookup(const char *name) {
   return NULL;
 }
 
-static device_t *dev_create(size_t size, const char* name, int id, devops_t *ops) {
+static device_t *dev_create(size_t size, const char* name, int id, devops_t *ops) 
+{
   device_t *dev = pmm->alloc(sizeof(device_t));
-  *dev = (device_t) {
+  *dev = (device_t) 
+	{
     .name = name,
     .ptr  = pmm->alloc(size),
     .id   = id,
@@ -40,7 +44,8 @@ static device_t *dev_create(size_t size, const char* name, int id, devops_t *ops
 void dev_input_task();
 void dev_tty_task();
 
-static void dev_init() {
+static void dev_init() 
+{
 #define INIT(id, device_type, dev_name, dev_id, dev_ops) \
   devices[id] = dev_create(sizeof(device_type), dev_name, dev_id, dev_ops); \
   devices[id]->ops->init(devices[id]);
@@ -51,7 +56,8 @@ static void dev_init() {
   kmt->create(pmm->alloc(sizeof(task_t)), "tty-task",   dev_tty_task,   NULL);
 }
 
-MODULE_DEF(dev) = {
+MODULE_DEF(dev) = 
+{
   .init   = dev_init,
   .lookup = dev_lookup,
 };

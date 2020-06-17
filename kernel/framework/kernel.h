@@ -51,7 +51,8 @@ MODULE(dev)
 };
 
 struct ufs_stat;
-MODULE(vfs) {
+MODULE(vfs) 
+{
   void (*init)();
   int (*write)(int fd, void *buf, int count);
   int (*read)(int fd, void *buf, int count);

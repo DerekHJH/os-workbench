@@ -4,8 +4,10 @@
 static sem_t sem_kbdirq;
 static char keymap[][2];
 
-static struct input_event event(int ctrl, int alt, int data) {
-  return (struct input_event) {
+static struct input_event event(int ctrl, int alt, int data) 
+{
+  return (struct input_event) 
+	{
     .ctrl = ctrl,
     .alt  = alt,
     .data = data,

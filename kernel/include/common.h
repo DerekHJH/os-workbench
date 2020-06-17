@@ -4,6 +4,7 @@
 #include <amdev.h>
 #include <macro.h>
 #include <sys/types.h>
+#include <vfs.h>
 struct task
 {
 	struct 
@@ -51,3 +52,8 @@ typedef struct __taskop
 	int cpu;
 	spinlock_t lock;
 }taskop_t;
+
+
+
+
+
