@@ -8,7 +8,7 @@
 #define MAXFILE (NDIRECT + NINDIRECT)
 
 
-typedef struct _inode
+typedef struct _dinode
 {
 	short type;
 	short nlink;
@@ -16,7 +16,7 @@ typedef struct _inode
 	short minor;
 	unsigned int size;
 	unsigned int addrs[NDIRECT + 1];
-}__attribute__((packed))inode_t;
+}__attribute__((packed))dinode_t;
 
 
 
@@ -29,7 +29,7 @@ typedef struct _inode
 #define INODESTART FSSTART
 
 //middle
-#define IPB (BSIZE / sizeof(inode_t))
+#define IPB (BSIZE / sizeof(dinode_t))
 #define BPB (BSIZE * 8)
 #define IBLOCK(i) ((i) / IPB + INODESTART)
 //midlle
@@ -47,7 +47,11 @@ typedef struct _inode
 
 
 
+#define T_DIR 1
+#define T_FILE 2
+#define T_DEV 3
 
+#define ROOTINO 1
 
 
 
