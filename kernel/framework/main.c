@@ -43,6 +43,6 @@ int main(const char *args)
   _cte_init(os->trap);
   os->init();
 
-	create_threads();
+	//create_threads();
   _mpe_init(os->run);
 }
