@@ -14,7 +14,7 @@ static int sd_init(device_t *dev)
     sd->blksz  = info.blksz;
     sd->buf    = pmm->alloc(sd->blksz);
   }
-	printf("0x%x 0x%x\n", info.blkcnt, info.blksz);
+	printf("===========0x%x 0x%x===========\n", info.blkcnt, info.blksz);
   return 0;
 }
 
