@@ -37,7 +37,7 @@ static void os_init()
   char buf[512];
   sd->ops->read(sd, 0, &buf[0], 512);
   for(int i = 0; i < 512; i++)
-  	printf("%c", buf[i]);
+  	printf("%x ", buf[i]);
   printf("\n\n\n");
 #endif
 }
