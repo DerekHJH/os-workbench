@@ -1,3 +1,5 @@
+#ifndef KERNELH
+#define KERNELH
 #include <am.h>
 #define DEBUG
 #define MODULE(mod) \
@@ -67,3 +69,4 @@ MODULE(vfs)
   int (*dup)(int fd);
 };
 
+#endif

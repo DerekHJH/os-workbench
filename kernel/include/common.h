@@ -5,6 +5,9 @@
 #include <macro.h>
 #include <sys/types.h>
 #include <vfs.h>
+
+#ifndef OSSTR
+#define OSSTR
 struct task
 {
 	struct 
@@ -52,7 +55,7 @@ typedef struct __taskop
 	int cpu;
 	spinlock_t lock;
 }taskop_t;
-
+#endif
 
 
 

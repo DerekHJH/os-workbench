@@ -1,3 +1,5 @@
+#ifndef MACRO
+#define MACRO
 /*==========cpu============*/
 #define MAXNCPU 8
 
@@ -15,4 +17,4 @@
 
 
 
-
+#endif

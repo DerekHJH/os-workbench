@@ -1,5 +1,5 @@
 #include <common.h>
-
+#include <devices.h>
 #define MAXHANDLE 100
 typedef struct _ehandle
 {
@@ -32,11 +32,19 @@ static void os_init()
 	dev->init();
 	vfs->init();
 	sort_handles();
+#ifdef DEBUG
+	device_t *sd = dev->lookup("sda");
+  char buf[512];
+  sd->ops->read(sd, 0, &buf[0], 512);
+  for(int i = 0; i < 512; i++)
+  	printf("%c", buf[i]);
+  printf("\n\n\n");
+#endif
 }
 
 static void os_run() 
 {
-#ifdef DEBUG
+#ifdef DEBUG	
 	printf("Hello from CPU %d\n", _cpu());
 #endif
 	_intr_write(1);

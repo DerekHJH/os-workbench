@@ -1,5 +1,7 @@
 #include <common.h>
 
+#ifndef DEVSTR
+#define DEVSTR
 typedef struct devops 
 {
   int (*init)(device_t *dev);
@@ -114,3 +116,4 @@ typedef struct
   uint32_t blkcnt, blksz;
   uint8_t *buf;
 } sd_t;
+#endif
