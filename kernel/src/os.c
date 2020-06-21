@@ -1,5 +1,4 @@
 #include <common.h>
-#include <devices.h>
 #define MAXHANDLE 100
 typedef struct _ehandle
 {
