@@ -14,11 +14,13 @@ static struct input_event event(int ctrl, int alt, int data)
   };
 }
 
-static int is_empty(input_t *in) {
+static int is_empty(input_t *in) 
+{
   return in->rear == in->front;
 }
 
-static void push_event(input_t *in, struct input_event ev) {
+static void push_event(input_t *in, struct input_event ev) 
+{
   kmt->spin_lock(&in->lock);
   in->events[in->rear] = ev;
   in->rear = (in->rear + 1) % NEVENTS;
@@ -27,7 +29,8 @@ static void push_event(input_t *in, struct input_event ev) {
   kmt->sem_signal(&in->event_sem);
 }
 
-static struct input_event pop_event(input_t *in) {
+static struct input_event pop_event(input_t *in) 
+{
   kmt->sem_wait(&in->event_sem);
   kmt->spin_lock(&in->lock);
   panic_on(is_empty(in), "input queue empty");
@@ -38,13 +41,16 @@ static struct input_event pop_event(input_t *in) {
   return ret;
 }
 
-static void input_keydown(device_t *dev, int code) {
+static void input_keydown(device_t *dev, int code) 
+{
   input_t *in = dev->ptr;
   int key = code & ~0x8000, ch;
 
-  if (code & 0x8000) {
+  if (code & 0x8000) 
+  {
     // keydown
-    switch (key) {
+    switch (key) 
+    {
       case _KEY_CAPSLOCK: in->capslock     ^= 1; break; 
       case _KEY_LCTRL:    in->ctrl_down[0]  = 1; break; 
       case _KEY_RCTRL:    in->ctrl_down[1]  = 1; break; 
@@ -54,28 +60,39 @@ static void input_keydown(device_t *dev, int code) {
       case _KEY_RSHIFT:   in->shift_down[1] = 1; break; 
       default:
         ch = keymap[key][0];
-        if (ch) {
+        if (ch) 
+        {
           int shift = in->shift_down[0] || in->shift_down[1];
           int ctrl  = in->ctrl_down[0]  || in->ctrl_down[1];
           int alt   = in->alt_down[0]   || in->alt_down[1];
 
-          if (ctrl || alt) {
+          if (ctrl || alt) 
+          {
             push_event(in, event(ctrl, alt, ch));
-          } else {
-            if (ch >= 'a' && ch <= 'z') {
+          } 
+          else 
+          {
+            if (ch >= 'a' && ch <= 'z') 
+            {
               shift ^= in->capslock;
             }
-            if (shift) {
+            if (shift) 
+            {
               push_event(in, event(0, 0, keymap[key][1]));
-            } else {
+            } 
+            else 
+            {
               push_event(in, event(0, 0, ch));
             }
           }
         }
     }
-  } else {
+  } 
+  else 
+  {
     // keyup
-    switch (code) {
+    switch (code) 
+    {
       case _KEY_LCTRL:  in->ctrl_down[0]  = 0; break; 
       case _KEY_RCTRL:  in->ctrl_down[1]  = 0; break; 
       case _KEY_LALT:   in->alt_down[0]   = 0; break; 
@@ -86,12 +103,14 @@ static void input_keydown(device_t *dev, int code) {
   }
 }
 
-static _Context *input_notify(_Event ev, _Context *context) {
+static _Context *input_notify(_Event ev, _Context *context) 
+{
   kmt->sem_signal(&sem_kbdirq);
   return NULL;
 }
 
-static int input_init(device_t *dev) {
+static int input_init(device_t *dev) 
+{
   input_t *in = dev->ptr;
   in->events = dev_malloc(sizeof(in->events[0]) * NEVENTS);
   in->front = in->rear = 0;
@@ -105,12 +124,16 @@ static int input_init(device_t *dev) {
   return 0;
 }
 
-static ssize_t input_read(device_t *dev, off_t offset, void *buf, size_t count) {
+static ssize_t input_read(device_t *dev, off_t offset, void *buf, size_t count) 
+{
   struct input_event ev = pop_event(dev->ptr);
-  if (count >= sizeof(ev)) {
+  if (count >= sizeof(ev)) 
+  {
     memcpy(buf, &ev, sizeof(ev));
     return sizeof(ev);
-  } else {
+  } 
+  else 
+  {
     return 0;
   }
 }
@@ -181,17 +204,21 @@ static char keymap[256][2] = {
 // input daemon
 // ------------------------------------------------------------------
 
-void dev_input_task(void *args) {
+void dev_input_task(void *args) 
+{
   device_t *in = dev->lookup("input");
   uint32_t known_time = uptime();
 
-  while (1) {
+  while (1) 
+  {
     uint32_t code, time;
-    while ((code = read_key()) != 0) {
+    while ((code = read_key()) != 0) 
+    {
       input_keydown(in, code);
     }
     time = uptime();
-    if (time - known_time > 100 && is_empty(in->ptr)) {
+    if (time - known_time > 100 && is_empty(in->ptr)) 
+    {
       push_event(in->ptr, event(0, 0, 0));
       known_time = time;
     }
