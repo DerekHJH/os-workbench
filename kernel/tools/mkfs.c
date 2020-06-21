@@ -6,6 +6,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <../include/vfs.h>
+#include <dirent.h>
 
 #define uint unsigned int
 #define ushort unsigned short
@@ -71,7 +72,7 @@ void read_inode(uint inum, dinode_t *ip)
   *ip = *dip;
 }
 
-uint ialloc(ushort type)
+uint inode_alloc(ushort type)
 {
   uint inum = freeinode++;
   dinode_t inode;
@@ -79,7 +80,7 @@ uint ialloc(ushort type)
   bzero(&inode, sizeof(inode));
   inode.type = xshort(type);
   inode.nlink = xshort(1);
-  inode.size = xshort(0);
+  inode.size = xint(0);
   write_inode(inum, &inode);
   return inum;
 }
@@ -101,7 +102,7 @@ void inode_append(uint inum, void *xp, int n)
   while(n > 0)
   {
     fbn = off / BSIZE;
-		panic_on(fbn < MAXFILE, "\033[31m fbn < MAXFILE \033[0m\n");
+		panic_on(fbn >= MAXFILE, "\033[31m fbn >= MAXFILE \033[0m\n");
     if(fbn < NDIRECT)
     {
       if(xint(din.addrs[fbn]) == 0)
@@ -141,7 +142,7 @@ void bm_alloc(int used)
   int i;
 
   //printf("balloc: first %d blocks have been allocated\n", used);
-  panic_on(used < BSIZE * 8, "\033[31m used < BSIZE * 8 \033[0m\n");
+  panic_on(used >= BSIZE * 8, "\033[31m used >= BSIZE * 8 \033[0m\n");
   bzero(buf, BSIZE);
   for(i = 0; i < used; i++)
   {
@@ -151,41 +152,55 @@ void bm_alloc(int used)
   write_block(BMSTART, buf);
 }
 
-void fill_dirent(int type, uint inum, char *name)
+void fill_dirent(uint curinum, uint inum, char *name)
 {
 	dirent_t de;
-	if(inum == 0)inum = inode_alloc(T_DIR);
-  bzero(&dirent, sizeof(dirent));
+  bzero(&de, sizeof(de));
   de.inode = inum;
   strcpy(de.name, name);
-  inode_append(inum, &de, sizeof(de));
+  inode_append(curinum, &de, sizeof(de));
 }
-
-void traverse_dir(char *path, char *pathname, uint curinum, uint previnum)
+uint8_t *filecopy = NULL;
+void traverse_dir(char *path, uint curinum, uint previnum)
 {
 	DIR *dir = NULL;
 	struct dirent *de = NULL;
-	char nextpath[4096] = "\0";
-	char nextpathname[4096] = "\0";	
+	char nextpath[MAXPATH] = "\0";
 	panic_on(!(dir = opendir(path)), "\033[31m !(dir = opendir(path))\033[0m\n");
-	while(!(de = readdir(dir)))
+	while((de = readdir(dir)))
 	{
-		if(strncmp(de->d_name, ".", 1) == 0 || strncmp(de->d_name, "..", 2) == 0)
+		if(strcmp(de->d_name, ".") == 0)
 		{
-			fill_dirent(T_DIR, 0, ".");			
-			fill_dirent(T_DIR, previnum, "..");			
+			fill_dirent(curinum, curinum, ".");			
+			//printf(". --- %s\n", path);
+		}
+		else if(strcmp(de->d_name, "..") == 0)
+		{
+			fill_dirent(curinum, previnum, "..");
+			//printf(".. --- hahhahahah\n");
 		}
 		else
 		{
 			if(de->d_type == DT_REG)
 			{
-				fill_dirent(T_FILE, 0, de->d_name);
+				uint tempinum = inode_alloc(T_FILE);
+				fill_dirent(curinum, tempinum, de->d_name);
+				sprintf(nextpath, "%s%s", path, de->d_name);	
 
+				//printf("%s\n", nextpath);
+				int ffd = 0;
+				panic_on((ffd = open(nextpath, O_RDWR)) < 0, "\033[31m (ffd = open(nextpath, O_RDWR)) < 0 \033[0m\n");
+				panic_on((filecopy = mmap(NULL, lseek(ffd, 0, SEEK_END), PROT_READ | PROT_WRITE, MAP_SHARED, ffd, 0)) == (void *)-1, "\033[31 mmmap crash \033[0m\n");
+				inode_append(tempinum, filecopy, lseek(ffd, 0, SEEK_END));
 			}
 			else if(de->d_type == DT_DIR)
 			{
-				fill_dirent(T_DIR, 0, de->d_name);
-
+				uint tempinum = inode_alloc(T_DIR);
+				fill_dirent(curinum, tempinum, de->d_name);
+				sprintf(nextpath, "%s%s/", path, de->d_name);
+				
+				//printf("%s\n", nextpath);
+				traverse_dir(nextpath, tempinum, curinum);
 			}
 		}
 	}
@@ -199,7 +214,7 @@ int main(int argc, char *argv[])
 
   assert((fd = open(argv[2], O_RDWR)) > 0);
   assert((ftruncate(fd, IMG_SIZE)) == 0);
-  assert((disk = mmap(NULL, IMG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != (void *)-1);
+  //assert((disk = mmap(NULL, IMG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != (void *)-1);
   //initialize with zeros
 	char zeros[BSIZE] = {0};
 	memset(zeros, 0, sizeof(zeros));
@@ -207,10 +222,14 @@ int main(int argc, char *argv[])
 		write_block(i, zeros);
 	
 	
-	char rootname[4096];
+	char rootname[MAXPATH];
 	sprintf(rootname, "%s", argv[3]);
-	char pathname[4096] = "\";
-	traverse_dir(rootname, pathname, ROOTINO, ROOTINO);
+
+	uint rootino = inode_alloc(T_DIR);
+	panic_on(rootino != ROOTINO, "\033[31m rootino != ROOTINO \033[0m\n");
+	traverse_dir(rootname, ROOTINO, ROOTINO);
+
+	bm_alloc(freeblock);
 
   munmap(disk, IMG_SIZE);
   close(fd);

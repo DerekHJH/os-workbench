@@ -20,6 +20,9 @@ typedef struct _dinode
 
 
 
+#define MAXPATH 4096
+
+
 
 
 #define NINODES 200 //maximum number of files
