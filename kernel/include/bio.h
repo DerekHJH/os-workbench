@@ -3,11 +3,10 @@
 
 #define MAXOPBLOCK 10
 #define NBUF (MAXOPBLOCK * 3)
-
 typedef struct _buf 
 {
   int flags;
-  uint dev;
+  device_t *dev;
   uint blockno;
   sem_t sem;
   uint refcnt;

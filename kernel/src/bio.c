@@ -29,7 +29,7 @@ void binit(void)
   }
 }
 
-static buf_t *bget(uint32_t dev, uint32_t blockno)
+static buf_t *bget(device_t *dev, uint32_t blockno)
 {
   buf_t *b;
 
@@ -68,18 +68,18 @@ void iderw(buf_t *b)
   kmt->spin_lock(&idelock);
 	if(b->flags & B_DIRTY)
 	{
-		devices[b->dev]->ops->write(devices[b->dev], b->blockno * BSIZE, b->data, BSIZE);
+		b->dev->ops->write(b->dev, b->blockno * BSIZE, b->data, BSIZE);
 		b->flags ^= B_DIRTY;
 	}
 	if((b->flags & B_VALID) == 0)
 	{
-		devices[b->dev]->ops->read(devices[b->dev], b->blockno * BSIZE, b->data, BSIZE);
+		b->dev->ops->read(b->dev, b->blockno * BSIZE, b->data, BSIZE);
 		b->flags |= B_VALID;
 	}
   kmt->spin_unlock(&idelock);
 }
 
-buf_t *bread(uint32_t dev, uint32_t blockno)
+buf_t *bread(device_t *dev, uint32_t blockno)
 {
   buf_t *b;
 
