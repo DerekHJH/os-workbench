@@ -1,5 +1,3 @@
-#ifndef KERNELH
-#define KERNELH
 #include <am.h>
 #define DEBUG
 #define MODULE(mod) \
@@ -68,5 +66,3 @@ MODULE(vfs)
   int (*chdir)(const char *path);
   int (*dup)(int fd);
 };
-
-#endif

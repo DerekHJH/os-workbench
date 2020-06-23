@@ -1,7 +1,7 @@
 #include <common.h>
 
-#ifndef DEVSTR
-#define DEVSTR
+#ifndef DEVICESH
+#define DEVICESH
 typedef struct devops 
 {
   int (*init)(device_t *dev);

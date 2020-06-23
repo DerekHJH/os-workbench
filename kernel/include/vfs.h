@@ -1,3 +1,4 @@
+#include <common.h>
 #ifndef VFSH
 #define VFSH
 
