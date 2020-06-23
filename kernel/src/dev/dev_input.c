@@ -1,4 +1,4 @@
-#include <devices.h>
+#include <common.h>
 
 #define NEVENTS 128
 static sem_t sem_kbdirq;

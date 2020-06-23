@@ -1,5 +1,3 @@
-#include <common.h>
-
 #ifndef DEVICESH
 #define DEVICESH
 typedef struct devops 

@@ -9,11 +9,10 @@ typedef struct _buf
   int flags;
   uint dev;
   uint blockno;
-  struct semaphore sem;
+  sem_t sem;
   uint refcnt;
-  struct buf *prev; // LRU cache list
-  struct buf *next;
-  struct buf *qnext; // disk queue
+  struct _buf *prev; // LRU cache list
+  struct _buf *next;
   uint8_t data[BSIZE];
 }buf_t;
 #define B_VALID 0x2  // buffer has been read from disk

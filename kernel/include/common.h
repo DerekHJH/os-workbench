@@ -4,5 +4,6 @@
 #include <amdev.h>
 #include <sys/types.h>
 #include <kmt.h>
+#include <devices.h>
 #include <vfs.h>
 #include <bio.h>

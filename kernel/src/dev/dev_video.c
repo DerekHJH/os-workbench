@@ -1,4 +1,4 @@
-#include <devices.h>
+#include <common.h>
 
 #define NTEXTURE 16384
 #define NSPRITE  16384

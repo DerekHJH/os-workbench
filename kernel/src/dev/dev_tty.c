@@ -1,4 +1,4 @@
-#include <devices.h>
+#include <common.h>
 
 #define TTY_COOK_BUF_SZ 1024
 
