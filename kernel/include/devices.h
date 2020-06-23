@@ -6,7 +6,7 @@ typedef struct devops
   ssize_t (*read) (device_t *dev, off_t offset, void *buf, size_t count);
   ssize_t (*write)(device_t *dev, off_t offset, const void *buf, size_t count);
 }devops_t;
-extern devops_t tty_ops, fb_ops, sd_ops, input_ops;
+extern devops_t tty_ops, fb_ops, sd_ops, input_ops, null_ops, zero_ops, random_ops;
 
 struct device 
 {
@@ -114,4 +114,19 @@ typedef struct
   uint32_t blkcnt, blksz;
   uint8_t *buf;
 } sd_t;
+
+typedef struct 
+{
+	int foo;	
+}null_t;
+
+typedef struct 
+{
+	int foo;
+}zero_t;
+
+typedef struct 
+{
+	int foo;       
+}random_t;
 #endif
