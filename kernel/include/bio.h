@@ -4,11 +4,7 @@
 #define MAXOPBLOCK 10
 #define NBUF (MAXOPBLOCK * 3)
 
-
-
-
-
-struct _buf 
+typedef struct _buf 
 {
   int flags;
   uint dev;
@@ -18,7 +14,7 @@ struct _buf
   struct buf *prev; // LRU cache list
   struct buf *next;
   struct buf *qnext; // disk queue
-  uchar data[BSIZE];
+  uint8_t data[BSIZE];
 }buf_t;
 #define B_VALID 0x2  // buffer has been read from disk
 #define B_DIRTY 0x4  // buffer needs to be written to disk

@@ -5,3 +5,4 @@
 #include <sys/types.h>
 #include <kmt.h>
 #include <vfs.h>
+#include <bio.h>
