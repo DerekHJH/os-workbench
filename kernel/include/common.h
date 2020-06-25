@@ -8,3 +8,4 @@
 #include <vfs.h>
 #include <bio.h>
 #include <fs.h>
+#include <stat.h>
