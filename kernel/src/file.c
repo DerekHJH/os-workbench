@@ -57,4 +57,54 @@ void fileclose(file_t *f)
   if(ff.type == FD_INODE)iput(ff.ip);
 }
 
+int filestat(file_t *f, stat_t *st)
+{
+  if(f->type == FD_INODE)
+  {
+    ilock(f->ip);
+    stati(f->ip, st);
+    iunlock(f->ip);
+    return 0;
+  }
+  return -1;
+}
+int fileread(file_t *f, char *addr, int n)
+{
+  int r;
 
+  if(f->readable == 0)return -1;
+  if(f->type == FD_INODE)
+  {
+    ilock(f->ip);
+    if((r = readi(f->ip, addr, f->off, n)) > 0)f->off += r;
+    iunlock(f->ip);
+    return r;
+  }
+  panic_on(1, "\033[31m fileread reached the end\n\33[0m");
+}
+int filewrite(file_t *f, char *addr, int n)
+{
+  int r;
+
+  if(f->writable == 0)return -1;
+  if(f->type == FD_INODE)
+  {
+    int max = ((MAXOPBLOCKS - 1 - 1 - 2) / 2) * 512;
+    int i = 0;
+    while(i < n)
+    {
+      int n1 = n - i;
+      if(n1 > max)n1 = max;
+
+      ilock(f->ip);
+      if ((r = writei(f->ip, addr + i, f->off, n1)) > 0)f->off += r;
+      iunlock(f->ip);
+
+      if(r < 0)break;
+      panic_on(r != n1, "\033[31m short filewrite\n \033[0m");
+      i += r;
+    }
+    return i == n ? n : -1;
+  }
+	panic_on(1, "\033[31m filewrite reached the end\n\33[0m");
+}

@@ -1,8 +1,8 @@
 #ifndef BUFH
 #define BUFH
 
-#define MAXOPBLOCK 10
-#define NBUF (MAXOPBLOCK * 3)
+#define MAXOPBLOCKS 10
+#define NBUF (MAXOPBLOCKS * 3)
 typedef struct _buf 
 {
   int flags;
