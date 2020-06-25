@@ -3,9 +3,11 @@
 #include <klib-macros.h>
 #include <amdev.h>
 #include <sys/types.h>
+#include <param.h>
 #include <kmt.h>
 #include <devices.h>
 #include <vfs.h>
 #include <bio.h>
 #include <stat.h>
 #include <fs.h>
+#include <file.h>
