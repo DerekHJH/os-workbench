@@ -4,6 +4,7 @@ static void vfs_init()
 {
 	binit();
 	iinit();
+	fileinit();
 	return;
 }
 static int vfs_write(int fd, void *buf, int count)
