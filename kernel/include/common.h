@@ -7,3 +7,4 @@
 #include <devices.h>
 #include <vfs.h>
 #include <bio.h>
+#include <fs.h>

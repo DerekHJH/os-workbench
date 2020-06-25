@@ -14,11 +14,25 @@ typedef struct _dinode
 	short nlink;
 	short major;
 	short minor;
-	unsigned int size;
-	unsigned int addrs[NDIRECT + 1];
+	uint32_t size;
+	uint32_t addrs[NDIRECT + 1];
 }__attribute__((packed))dinode_t;
+typedef struct inode 
+{
+  uint32_t dev;           // Device number
+  uint32_t inum;          // Inode number
+  int ref;            // Reference count
+  sem_t sem; // protects everything below here
+  int valid;          // inode has been read from disk?
 
-
+  short type;         // copy of disk inode
+  short major;
+  short minor;
+  short nlink;
+  uint32_t size;
+  uint32_t addrs[NDIRECT + 1];
+}inode_t;
+#define NINODE 50 //maximum nunmber of active inodes
 
 #define MAXPATH 4096
 
@@ -65,5 +79,6 @@ typedef struct _dirent
 	uint32_t inode;
   char name[DIRSIZ];
 }dirent_t;
+
 
 #endif
