@@ -62,7 +62,7 @@ static buf_t *bget(device_t *dev, uint32_t blockno)
   panic_on(1, "\033[31mbget: no buffers \033[0m\n");
 }
 
-void iderw(buf_t *b)
+static void iderw(buf_t *b)
 {
   panic_on((b->flags & (B_VALID|B_DIRTY)) == B_VALID, "\033[31m iderw: nothing to do\033[0m\n");
   kmt->spin_lock(&idelock);
