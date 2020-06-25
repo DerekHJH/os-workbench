@@ -2,6 +2,7 @@
 
 static void vfs_init()
 {
+	binit();
 	return;
 }
 static int vfs_write(int fd, void *buf, int count)
