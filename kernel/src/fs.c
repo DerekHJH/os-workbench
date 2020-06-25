@@ -24,39 +24,6 @@ void iinit()
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 inode_t *ialloc(device_t *dev, short type)
 {
   buf_t *bp;
@@ -212,18 +179,6 @@ int writei(inode_t *ip, char *src, uint32_t off, uint32_t n)
   }
   return n;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 static inode_t *iget(device_t *dev, uint32_t inum)
 {

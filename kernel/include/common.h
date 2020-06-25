@@ -7,5 +7,5 @@
 #include <devices.h>
 #include <vfs.h>
 #include <bio.h>
-#include <fs.h>
 #include <stat.h>
+#include <fs.h>
