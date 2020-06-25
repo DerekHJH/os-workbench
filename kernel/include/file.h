@@ -12,3 +12,11 @@ typedef struct file
 }file_t;
 
 #endif
+
+void fileinit();
+file_t *filealloc();
+file_t *filedup(file_t *f);
+void fileclose(file_t *f);
+int filestat(file_t *f, stat_t *st);
+int fileread(file_t *f, char *addr, int n);
+int filewrite(file_t *f, char *addr, int n);
