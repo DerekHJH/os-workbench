@@ -1,5 +1,5 @@
 void iinit();
-inode_t *ialloc(device_t *dev, short type);
+inode_t *ialloc(uint32_t dev, short type);
 void iupdate(inode_t *ip);
 inode_t *idup(inode_t *ip);
 void ilock(inode_t *ip);
@@ -12,3 +12,5 @@ int writei(inode_t *ip, char *src, uint32_t off, uint32_t n);
 int namecmp(const char *s, const char *t);
 inode_t *dirlookup(inode_t *dp, char *name, uint32_t *poff);
 int dirlink(inode_t *dp, char *name, uint32_t inum);
+inode_t *namei(char *path);
+inode_t *nameiparent(char *path, char *name);

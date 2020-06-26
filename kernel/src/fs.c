@@ -4,12 +4,14 @@ struct
   spinlock_t lock;
   inode_t inode[NINODE];
 } icache;
-static inode_t *iget(device_t *dev, uint32_t inum);
+static inode_t *iget(uint32_t dev, uint32_t inum);
 static void itrunc(inode_t *ip);
-static void bzero(device_t *dev, int bno);
-static uint32_t balloc(device_t *dev);
-static void bfree(device_t *dev, uint32_t b);
+static void bzero(uint32_t dev, int bno);
+static uint32_t balloc(uint32_t dev);
+static void bfree(uint32_t dev, uint32_t b);
 static uint32_t bmap(inode_t *ip, uint32_t bn);
+static char *skipelem(char *path, char *name);
+static inode_t *namex(char *path, int nameiparent, char *name);
 #define min(a, b) ((a) < (b) ? (a) : (b))
 void log_write(buf_t *bp)
 {
@@ -24,7 +26,7 @@ void iinit()
   }
 }
 
-inode_t *ialloc(device_t *dev, short type)
+inode_t *ialloc(uint32_t dev, short type)
 {
   buf_t *bp;
   dinode_t *dip;
@@ -234,11 +236,20 @@ int dirlink(inode_t *dp, char *name, uint32_t inum)
   return 0;
 }
 
+inode_t *namei(char *path)
+{
+  char name[DIRSIZ];
+  return namex(path, 0, name);
+}
 
+inode_t *nameiparent(char *path, char *name)
+{
+  return namex(path, 1, name);
+}
 
+/*===================static function==================*/
 
-
-static inode_t *iget(device_t *dev, uint32_t inum)
+static inode_t *iget(uint32_t dev, uint32_t inum)
 {
   inode_t *ip, *empty;
 
@@ -303,7 +314,7 @@ static void itrunc(inode_t *ip)
   iupdate(ip);
 }
 
-static void bzero(device_t *dev, int bno)
+static void bzero(uint32_t dev, int bno)
 {
   buf_t *bp;
 
@@ -313,7 +324,7 @@ static void bzero(device_t *dev, int bno)
   brelse(bp);
 }
 
-static uint32_t balloc(device_t *dev)
+static uint32_t balloc(uint32_t dev)
 {
   int b, bi, m;
   buf_t *bp = NULL;
@@ -338,7 +349,7 @@ static uint32_t balloc(device_t *dev)
   panic_on(1, "\033[31m balloc: out of blocks\n \033[0m");
 }
 
-static void bfree(device_t *dev, uint32_t b)
+static void bfree(uint32_t dev, uint32_t b)
 {
   buf_t *bp;
   int bi, m;
@@ -379,4 +390,63 @@ static uint32_t bmap(inode_t *ip, uint32_t bn)
   }
 
   panic_on(1, "\033[31m bmap: out of range\n \033[0m");
+}
+
+static char *skipelem(char *path, char *name)
+{
+  char *s;
+  int len;
+
+  while(*path == '/')path++;
+  if(*path == 0)return 0;
+  s = path;
+  while(*path != '/' && *path != 0)path++;
+  len = path - s;
+  if(len >= DIRSIZ)memmove(name, s, DIRSIZ);
+  else 
+  {
+    memmove(name, s, len);
+    name[len] = 0;
+  }
+  while(*path == '/')path++;
+  return path;
+}
+static inode_t *namex(char *path, int nameiparent, char *name)
+{
+	
+  inode_t *ip, *next;
+
+  //if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
+  //else ip = idup(myproc()->cwd);
+	ip = iget(ROOTDEV, ROOTINO);
+
+  while((path = skipelem(path, name)) != 0)
+  {
+    ilock(ip);
+    if(ip->type != T_DIR)
+    {
+      iunlockput(ip);
+      return 0;
+    }
+    if(nameiparent && *path == '\0')
+    {
+      // Stop one level early.
+      iunlock(ip);
+      return ip;
+    }
+    if((next = dirlookup(ip, name, 0)) == 0)
+    {
+      iunlockput(ip);
+      return 0;
+    }
+    iunlockput(ip);
+    ip = next;
+  }
+  if(nameiparent)
+  {
+    iput(ip);
+    return 0;
+  }
+  return ip;
+	
 }

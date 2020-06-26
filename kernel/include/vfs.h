@@ -19,7 +19,7 @@ typedef struct _dinode
 }__attribute__((packed))dinode_t;
 typedef struct inode 
 {
-  device_t *dev;           // Device number
+  uint32_t dev;           // Device number
   uint32_t inum;          // Inode number
   int ref;            // Reference count
   sem_t sem; // protects everything below here

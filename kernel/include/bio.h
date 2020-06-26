@@ -6,7 +6,7 @@
 typedef struct _buf 
 {
   int flags;
-  device_t *dev;
+  uint32_t dev;
   uint blockno;
   sem_t sem;
   uint refcnt;
@@ -18,7 +18,7 @@ typedef struct _buf
 #define B_DIRTY 0x4  // buffer needs to be written to disk
 
 #endif
-buf_t *bread(device_t *dev, uint32_t blockno);
+buf_t *bread(uint32_t dev, uint32_t blockno);
 void bwrite(buf_t *b);
 void brelse(buf_t *b);
 void binit(void);

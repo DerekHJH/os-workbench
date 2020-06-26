@@ -29,7 +29,7 @@ void binit(void)
   }
 }
 
-static buf_t *bget(device_t *dev, uint32_t blockno)
+static buf_t *bget(uint32_t dev, uint32_t blockno)
 {
   buf_t *b;
 
@@ -65,21 +65,22 @@ static buf_t *bget(device_t *dev, uint32_t blockno)
 static void iderw(buf_t *b)
 {
   panic_on((b->flags & (B_VALID|B_DIRTY)) == B_VALID, "\033[31m iderw: nothing to do\033[0m\n");
+	device_t *dev = devices[b->dev];
   kmt->spin_lock(&idelock);
 	if(b->flags & B_DIRTY)
 	{
-		b->dev->ops->write(b->dev, b->blockno * BSIZE, b->data, BSIZE);
+		dev->ops->write(dev, b->blockno * BSIZE, b->data, BSIZE);
 		b->flags ^= B_DIRTY;
 	}
 	if((b->flags & B_VALID) == 0)
 	{
-		b->dev->ops->read(b->dev, b->blockno * BSIZE, b->data, BSIZE);
+		dev->ops->read(dev, b->blockno * BSIZE, b->data, BSIZE);
 		b->flags |= B_VALID;
 	}
   kmt->spin_unlock(&idelock);
 }
 
-buf_t *bread(device_t *dev, uint32_t blockno)
+buf_t *bread(uint32_t dev, uint32_t blockno)
 {
   buf_t *b;
 
