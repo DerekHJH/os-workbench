@@ -9,3 +9,6 @@ void iunlockput(inode_t *ip);
 void stati(inode_t *ip, stat_t *st);
 int readi(inode_t *ip, char *dst, uint32_t off, uint32_t n);
 int writei(inode_t *ip, char *src, uint32_t off, uint32_t n);
+int namecmp(const char *s, const char *t);
+inode_t *dirlookup(inode_t *dp, char *name, uint32_t *poff);
+int dirlink(inode_t *dp, char *name, uint32_t inum);

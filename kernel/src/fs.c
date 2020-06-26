@@ -180,6 +180,64 @@ int writei(inode_t *ip, char *src, uint32_t off, uint32_t n)
   return n;
 }
 
+int namecmp(const char *s, const char *t)
+{
+  return strncmp(s, t, DIRSIZ);
+}
+
+inode_t *dirlookup(inode_t *dp, char *name, uint32_t *poff)
+{
+  uint32_t off, inum;
+  dirent_t de;
+
+  panic_on(dp->type != T_DIR, "\033[31m dirlookup not DIR\n \033[0m");
+
+  for(off = 0; off < dp->size; off += sizeof(de))
+  {
+    panic_on(readi(dp, (char*)&de, off, sizeof(de)) != sizeof(de), "\033[31m dirlookup read\n \033[0m");
+    if(de.inode == 0)continue;
+    if(namecmp(name, de.name) == 0)
+    {
+      // entry matches path element
+      if(poff)*poff = off;
+      inum = de.inode;
+      return iget(dp->dev, inum);
+    }
+  }
+  return 0;
+}
+
+int dirlink(inode_t *dp, char *name, uint32_t inum)
+{
+  int off;
+  dirent_t de;
+  inode_t *ip;
+
+  // Check that name is not present.
+  if((ip = dirlookup(dp, name, 0)) != 0)
+  {
+    iput(ip);
+    return -1;
+  }
+
+  // Look for an empty dirent.
+  for(off = 0; off < dp->size; off += sizeof(de))
+  {
+    panic_on(readi(dp, (char*)&de, off, sizeof(de)) != sizeof(de), "\033[31m dirlink read\n \033[0m");
+    if(de.inode == 0)break;
+  }
+
+  strncpy(de.name, name, DIRSIZ);
+  de.inode = inum;
+  panic_on(writei(dp, (char*)&de, off, sizeof(de)) != sizeof(de), "\033[31m dirlink\n \033[0m");
+
+  return 0;
+}
+
+
+
+
+
 static inode_t *iget(device_t *dev, uint32_t inum)
 {
   inode_t *ip, *empty;
