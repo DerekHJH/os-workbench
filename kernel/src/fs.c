@@ -411,14 +411,14 @@ static char *skipelem(char *path, char *name)
   while(*path == '/')path++;
   return path;
 }
+extern cpu_t cpuinfo[MAXNCPU];
 static inode_t *namex(char *path, int nameiparent, char *name)
 {
 	
   inode_t *ip, *next;
 
-  //if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
-  //else ip = idup(myproc()->cwd);
-	ip = iget(ROOTDEV, ROOTINO);
+  if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
+  else ip = idup(cpuinfo[_cpu()].current->cwd);
 
   while((path = skipelem(path, name)) != 0)
   {
