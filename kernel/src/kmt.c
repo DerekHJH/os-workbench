@@ -97,6 +97,7 @@ static int kmt_create(task_t *task, const char *name, void (*entry)(void *arg), 
   task->context = _kcontext(stack, entry, arg);
 	task->stat = READY;
 	task->last = 0;
+	task->cwd = namei("/");
 
 	task->cpu = taskop.cpu;
 
@@ -176,6 +177,7 @@ static void kmt_init()
 		cpuinfo[i].idle.prev = NULL;
 		cpuinfo[i].idle.next = NULL;
 		cpuinfo[i].idle.context = NULL;	
+		cpuinfo[i].idle.cwd = NULL;
 	}
 	/*==========on_orq=================*/
 	os->on_irq(-999999999, _EVENT_NULL, kmt_context_save);
