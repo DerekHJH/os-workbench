@@ -8,40 +8,12 @@
 #define TASKSIZE 4096
 #define READY 1
 #define HUNG 2
-#define HEADLEN (4 * sizeof(size_t) + 2 * sizeof(int) + sizeof(unsigned long long))
+#define HEADLEN (5 * sizeof(size_t) + 2 * sizeof(int) + sizeof(unsigned long long))
  /*===========sem==============*/
 #define QLEN 128
 
 /*===========time==========*/
 #define MAXTIME 10
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 struct task
 {
@@ -51,6 +23,7 @@ struct task
 		int cpu;
 		int stat;
 		unsigned long long last;
+		void *cwd;//inode
 		struct task *prev;
     struct task *next;
     _Context   *context;
