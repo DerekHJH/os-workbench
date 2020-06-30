@@ -6,6 +6,7 @@ static void vfs_init()
 	binit();
 	iinit();
 	fileinit();
+
 	return;
 }
 static int fdalloc(file_t *f)

@@ -133,10 +133,8 @@ void iunlockput(inode_t *ip)
 }
 void stati(inode_t *ip, stat_t *st)
 {
-  st->dev = ip->dev;
-  st->ino = ip->inum;
+  st->id = ip->inum;
   st->type = ip->type;
-  st->nlink = ip->nlink;
   st->size = ip->size;
 	return;
 }
