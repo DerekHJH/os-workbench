@@ -1,4 +1,5 @@
 #include <common.h>
+extern device_t *devices[];
 struct 
 {
   spinlock_t lock;
@@ -142,6 +143,12 @@ int readi(inode_t *ip, char *dst, uint32_t off, uint32_t n)
 {
   uint32_t tot, m;
   buf_t *bp;
+
+	if(ip->major > 0)
+	{
+		if(ip->major < 0 || ip->major >= NDEV || !devices[ip->major]->ops->read)return -1;
+		return devices[ip->major]->ops->read(devices[ip->major], off, dst, n);  
+	}
 
   if(off > ip->size || off + n < off)return -1;
   if(off + n > ip->size)n = ip->size - off;

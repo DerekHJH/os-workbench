@@ -65,7 +65,7 @@ static buf_t *bget(uint32_t dev, uint32_t blockno)
 static void iderw(buf_t *b)
 {
   panic_on((b->flags & (B_VALID|B_DIRTY)) == B_VALID, "\033[31m iderw: nothing to do\033[0m\n");
-	device_t *dev = devices[b->dev];
+	device_t *dev = devices[SDA];
   kmt->spin_lock(&idelock);
 	if(b->flags & B_DIRTY)
 	{
