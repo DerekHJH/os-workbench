@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/mman.h>
-#include <../include/vfs.h>
+#include "vfs.h"
 #include <dirent.h>
 
 #define uint unsigned int

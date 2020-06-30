@@ -269,6 +269,7 @@ static void vfs_init()
 	iinit();
 	fileinit();
 	
+	
 	vfs_mkdir("/proc");
 	vfs_mkdir("/dev");
 
