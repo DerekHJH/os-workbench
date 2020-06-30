@@ -33,8 +33,42 @@ static int vfs_lseek(int fd, int offset, int whence)
 }
 static int vfs_link(const char *oldpath, const char *newpath)
 {
+	char name[DIRSIZ];
+  struct inode *dp, *ip;
+
+	if((ip = namei((char *)oldpath)) == 0)return -1;
+
+
+  ilock(ip);
+  if(ip->type == T_DIR)
+	{
+    iunlockput(ip);
+    return -1;
+  }
+
+  ip->nlink++;
+  iupdate(ip);
+  iunlock(ip);
+
+  if((dp = nameiparent((char *)newpath, name)) == 0)goto bad;
+
+  ilock(dp);
+  if(dp->dev != ip->dev || dirlink(dp, name, ip->inum) < 0)
+	{
+    iunlockput(dp);
+    goto bad;
+  }
+  iunlockput(dp);
+  iput(ip);
 
 	return 0;
+
+bad:
+  ilock(ip);
+  ip->nlink--;
+  iupdate(ip);
+  iunlockput(ip);
+  return -1;
 }
 static int vfs_unlink(const char *pathname)
 {
