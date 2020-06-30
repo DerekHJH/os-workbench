@@ -175,10 +175,6 @@ bad:
   iunlockput(ip);
   return -1;
 }
-int namecmp(const char *s, const char *t)
-{
-  return strncmp(s, t, DIRSIZ);
-}
 static int isdirempty(inode_t *dp)
 {
   int off;
