@@ -271,6 +271,7 @@ static void vfs_init()
 	vfs_mkdir("/proc");
 	vfs_mkdir("/dev");
 
+	/*
 	inode_t *ip;
   panic_on((ip = create("/dev/zero", T_FILE, ZERO, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
   iunlockput(ip);
@@ -280,7 +281,7 @@ static void vfs_init()
 
   panic_on((ip = create("dev/random", T_FILE, RANDOM, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
   iunlockput(ip);
-
+	*/
 	return;
 }
 
