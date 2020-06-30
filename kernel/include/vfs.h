@@ -41,8 +41,8 @@ typedef struct inode
 
 #define NINODES 200 //maximum number of files
 //unit --- blocks --- replace superblock
-#define FSSTART (1024 * 1024 / BSIZE)
-#define FSSIZE (1024 * 1024 * 64 / BSIZE)
+#define FSSTART 0
+#define FSSIZE (1024 * 1024 * 255 / BSIZE)
 #define INODESTART FSSTART
 
 //middle
