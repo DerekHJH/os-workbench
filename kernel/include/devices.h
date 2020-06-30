@@ -1,5 +1,6 @@
 #ifndef DEVICESH
 #define DEVICESH
+enum {INPUT = 0, FB, TTY1, TTY2, SDA, NUL, ZERO, RANDOM};
 typedef struct devops 
 {
   int (*init)(device_t *dev);

@@ -1,14 +1,7 @@
 #include <common.h>
 extern cpu_t cpuinfo[];
 file_t *ofile[NOFILE];
-static void vfs_init()
-{
-	binit();
-	iinit();
-	fileinit();
 
-	return;
-}
 static int fdalloc(file_t *f)
 {
 	int fd;
@@ -270,7 +263,26 @@ static int vfs_dup(int fd)
 	filedup(ofile[fd]);
 	return fd2;
 }
+static void vfs_init()
+{
+	binit();
+	iinit();
+	fileinit();
+	vfs_mkdir("/proc");
+	vfs_mkdir("/dev");
 
+	inode_t *ip;
+  panic_on((ip = create("/dev/zero", T_FILE, 0, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
+  iunlockput(ip);
+
+  panic_on((ip = create("/dev/null", T_FILE, 0, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
+  iunlockput(ip);
+
+  panic_on((ip = create("dev/random", T_FILE, 0, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
+  iunlockput(ip);
+
+	return;
+}
 
 MODULE_DEF(vfs) = 
 {
