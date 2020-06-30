@@ -62,6 +62,7 @@ static buf_t *bget(uint32_t dev, uint32_t blockno)
   panic_on(1, "\033[31mbget: no buffers \033[0m\n");
 }
 
+#define FSOFFSET (1024 * 1024 / BSIZE)
 static void iderw(buf_t *b)
 {
   panic_on((b->flags & (B_VALID|B_DIRTY)) == B_VALID, "\033[31m iderw: nothing to do\033[0m\n");
@@ -69,12 +70,12 @@ static void iderw(buf_t *b)
   kmt->spin_lock(&idelock);
 	if(b->flags & B_DIRTY)
 	{
-		dev->ops->write(dev, b->blockno * BSIZE, b->data, BSIZE);
+		dev->ops->write(dev, (b->blockno + FSOFFSET) * BSIZE, b->data, BSIZE);
 		b->flags ^= B_DIRTY;
 	}
 	if((b->flags & B_VALID) == 0)
 	{
-		dev->ops->read(dev, b->blockno * BSIZE, b->data, BSIZE);
+		dev->ops->read(dev, (b->blockno + FSOFFSET) * BSIZE, b->data, BSIZE);
 		b->flags |= B_VALID;
 	}
   kmt->spin_unlock(&idelock);
