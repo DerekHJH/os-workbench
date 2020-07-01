@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
   //initialize with zeros
 	char zeros[BSIZE] = {0};
 	memset(zeros, 0, sizeof(zeros));
-	for(int i = FSSTART; i < FSSIZE; i++)
+	for(int i = FSSTART + FSOFFSET; i < FSSIZE + FSOFFSET; i++)
 		write_block(i, zeros);
 	
 	
