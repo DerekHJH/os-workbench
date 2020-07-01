@@ -7,11 +7,13 @@
 #include <sys/mman.h>
 #include "vfs.h"
 #include <dirent.h>
+#include <stdlib.h>
 
 #define uint unsigned int
 #define ushort unsigned short
 #define uchar unsigned char
 
+#define FSOFFSET (1024 *1024 / BSIZE)
 #define panic_on(cond, s)\
 	do\
 	{\
@@ -24,26 +26,38 @@
 
 #define IMG_SIZE (64 * 1024 * 1024)
 int fd;
-uint8_t *disk;
+//uint8_t *disk;
 int freeinode = 1;
 int freeblock = DATASTART;
 
 uint xint(uint x)
 {
-	return x;
+	uint y;
+  uchar *a = (uchar *)&y;
+  a[0] = x;
+  a[1] = x >> 8;
+  a[2] = x >> 16;
+  a[3] = x >> 24;
+  return y;
 }
 ushort xshort(ushort x)
 {
-	return x;
+	ushort y;
+  uchar *a = (uchar *)&y;
+  a[0] = x;
+  a[1] = x >> 8;
+  return y;
 }
 
 void write_block(uint bnum, void *buf)
 {
+	bnum += FSOFFSET;
   panic_on(lseek(fd, bnum * BSIZE, 0) != bnum * BSIZE, "\033[31m In write_block, lseek(fd, bnum * BSIZE, 0) != sec * BSIZE\033[0m\n");
 	panic_on(write(fd, buf, BSIZE) != BSIZE, "\033[31m In write_block, write(fd, buf, BSIZE) != BSIZE\033[0m\n");
 }
 void read_block(uint bnum, void *buf)
 {
+	bnum += FSOFFSET;
 	panic_on(lseek(fd, bnum * BSIZE, 0) != bnum * BSIZE, "\033[31m In read_block, lseek(fd, bnum * BSIZE, 0) != sec * BSIZE\033[0m\n");
 	panic_on(read(fd, buf, BSIZE) != BSIZE, "\033[31m In read_block, read(fd, buf, BSIZE) != BSIZE\033[0m\n");
 }
@@ -139,17 +153,21 @@ void inode_append(uint inum, void *xp, int n)
 void bm_alloc(int used)
 {
   uchar buf[BSIZE];
-  int i;
+  int i, cnt = 0;
 
   //printf("balloc: first %d blocks have been allocated\n", used);
-  panic_on(used >= BSIZE * 8, "\033[31m used >= BSIZE * 8 \033[0m\n");
-  bzero(buf, BSIZE);
-  for(i = 0; i < used; i++)
-  {
-    buf[i / 8] = buf[i / 8] | (0x1 << (i % 8));
-  }
-  //printf("balloc: write bitmap block at sector %d\n", sb.bmapstart);
-  write_block(BMSTART, buf);
+	while(used > 0)
+	{
+		bzero(buf, BSIZE);
+		for(i = 0; i < min(used, BSIZE); i++)
+		{
+			buf[i / 8] = buf[i / 8] | (0x1 << (i % 8));
+		}
+		//printf("balloc: write bitmap block at sector %d\n", sb.bmapstart);
+		write_block(BMSTART + cnt, buf);
+		used -= BSIZE;
+		cnt++;
+	}
 }
 
 void fill_dirent(uint curinum, uint inum, char *name)
@@ -167,16 +185,17 @@ void traverse_dir(char *path, uint curinum, uint previnum)
 	struct dirent *de = NULL;
 	char nextpath[MAXPATH] = "\0";
 	panic_on(!(dir = opendir(path)), "\033[31m !(dir = opendir(path))\033[0m\n");
+
+	fill_dirent(curinum, curinum, ".");			
+	fill_dirent(curinum, previnum, "..");
 	while((de = readdir(dir)))
 	{
 		if(strcmp(de->d_name, ".") == 0)
 		{
-			fill_dirent(curinum, curinum, ".");			
 			//printf(". --- %s\n", path);
 		}
 		else if(strcmp(de->d_name, "..") == 0)
 		{
-			fill_dirent(curinum, previnum, "..");
 			//printf(".. --- hahhahahah\n");
 		}
 		else
@@ -192,6 +211,8 @@ void traverse_dir(char *path, uint curinum, uint previnum)
 				panic_on((ffd = open(nextpath, O_RDWR)) < 0, "\033[31m (ffd = open(nextpath, O_RDWR)) < 0 \033[0m\n");
 				panic_on((filecopy = mmap(NULL, lseek(ffd, 0, SEEK_END), PROT_READ | PROT_WRITE, MAP_SHARED, ffd, 0)) == (void *)-1, "\033[31 mmmap crash \033[0m\n");
 				inode_append(tempinum, filecopy, lseek(ffd, 0, SEEK_END));
+				munmap(filecopy, lseek(ffd, 0, SEEK_END));
+				close(ffd);
 			}
 			else if(de->d_type == DT_DIR)
 			{
@@ -212,8 +233,9 @@ int main(int argc, char *argv[])
 	panic_on(BSIZE % sizeof(dirent_t) != 0, "\033[31m BSIZE mod sizeof(dirent_t) != 0\033[0m\n");
 	printf("FSSTART is 0x%x\nFSSIZE is 0x%x\nINODESTART is 0x%x\nNINODEBLOCK is 0x%lx\nBMSTART is 0x%lx\nNBM is 0x%x\nDATASTART is 0x%lx\nNDATA is 0x%lx\nNMETADATA is 0x%lx\n", FSSTART, FSSIZE, INODESTART, NINODEBLOCK, BMSTART, NBM, DATASTART, NDATA, NMETADATA);
 
+	uint32_t imgsize = atoi(argv[1]);
   assert((fd = open(argv[2], O_RDWR)) > 0);
-  assert((ftruncate(fd, IMG_SIZE)) == 0);
+  assert((ftruncate(fd, imgsize)) == 0);
   //assert((disk = mmap(NULL, IMG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != (void *)-1);
   //initialize with zeros
 	char zeros[BSIZE] = {0};
@@ -231,7 +253,7 @@ int main(int argc, char *argv[])
 
 	bm_alloc(freeblock);
 
-  munmap(disk, IMG_SIZE);
+  //munmap(disk, IMG_SIZE);
   close(fd);
 	return 0;
 }
