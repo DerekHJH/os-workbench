@@ -8,6 +8,8 @@
 #include "vfs.h"
 #include <dirent.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #define uint unsigned int
 #define ushort unsigned short
@@ -248,6 +250,16 @@ int main(int argc, char *argv[])
 	
 	char rootname[MAXPATH];
 	sprintf(rootname, "%s", argv[3]);
+
+	/*===========create proc and dev===============*/
+	char temppath[MAXPATH];
+	sprintf(temppath, "%sdev/", argv[3]);	
+	printf("%s\n", temppath);
+	mkdir(temppath, 0777);
+	sprintf(temppath, "%sproc/", argv[3]);	
+	printf("%s\n", temppath);
+  mkdir(temppath, 0777);
+	/*============================*/
 
 	uint rootino = inode_alloc(T_DIR);
 	panic_on(rootino != ROOTINO, "\033[31m rootino != ROOTINO \033[0m\n");
