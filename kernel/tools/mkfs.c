@@ -77,6 +77,7 @@ void write_inode(uint inum, dinode_t *ip)
   dip = ((dinode_t *)buf) + (inum % IPB);
   *dip = *ip;
   write_block(bn, buf);
+	//printf("in write inode bn is %d and inum is %u and IPB is %ld and sizeoof(dinode) is %zd\n", bn, inum, IPB, sizeof(dinode_t));
 }
 void read_inode(uint inum, dinode_t *ip)
 {
@@ -235,7 +236,7 @@ int main(int argc, char *argv[])
 	/*===========data structure check=========*/
 	panic_on(BSIZE % sizeof(dinode_t) != 0, "\033[31m BSIZE mod sizeof(dinode_t) != 0\033[0m\n");
 	panic_on(BSIZE % sizeof(dirent_t) != 0, "\033[31m BSIZE mod sizeof(dirent_t) != 0\033[0m\n");
-	printf("FSSTART is 0x%x\nFSSIZE is 0x%x\nINODESTART is 0x%x\nNINODEBLOCK is 0x%lx\nBMSTART is 0x%lx\nNBM is 0x%x\nDATASTART is 0x%lx\nNDATA is 0x%lx\nNMETADATA is 0x%lx\n", FSSTART, FSSIZE, INODESTART, NINODEBLOCK, BMSTART, NBM, DATASTART, NDATA, NMETADATA);
+	//printf("FSSTART is 0x%x\nFSSIZE is 0x%x\nINODESTART is 0x%x\nNINODEBLOCK is 0x%lx\nBMSTART is 0x%lx\nNBM is 0x%x\nDATASTART is 0x%lx\nNDATA is 0x%lx\nNMETADATA is 0x%lx\n", FSSTART, FSSIZE, INODESTART, NINODEBLOCK, BMSTART, NBM, DATASTART, NDATA, NMETADATA);
 
 	uint32_t imgsize = atoi(argv[1]) * 1024 * 1024;
   assert((fd = open(argv[2], O_RDWR)) > 0);
@@ -254,10 +255,10 @@ int main(int argc, char *argv[])
 	/*===========create proc and dev===============*/
 	char temppath[MAXPATH];
 	sprintf(temppath, "%sdev/", argv[3]);	
-	printf("%s\n", temppath);
+	//printf("%s\n", temppath);
 	mkdir(temppath, 0777);
 	sprintf(temppath, "%sproc/", argv[3]);	
-	printf("%s\n", temppath);
+	//printf("%s\n", temppath);
   mkdir(temppath, 0777);
 	/*============================*/
 
