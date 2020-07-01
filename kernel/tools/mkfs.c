@@ -13,7 +13,7 @@
 #define ushort unsigned short
 #define uchar unsigned char
 
-#define FSOFFSET (1024 *1024 / BSIZE)
+#define FSOFFSET (1024 * 1024 / BSIZE)
 #define panic_on(cond, s)\
 	do\
 	{\
@@ -24,7 +24,7 @@
 		}\
 	}while(0)
 
-#define IMG_SIZE (64 * 1024 * 1024)
+//#define IMG_SIZE (64 * 1024 * 1024)
 int fd;
 //uint8_t *disk;
 int freeinode = 1;
@@ -52,12 +52,14 @@ ushort xshort(ushort x)
 void write_block(uint bnum, void *buf)
 {
 	bnum += FSOFFSET;
+	panic_on(bnum * BSIZE < 1024 * 1024, "\033[31mfuck\n\033[0m");
   panic_on(lseek(fd, bnum * BSIZE, 0) != bnum * BSIZE, "\033[31m In write_block, lseek(fd, bnum * BSIZE, 0) != sec * BSIZE\033[0m\n");
 	panic_on(write(fd, buf, BSIZE) != BSIZE, "\033[31m In write_block, write(fd, buf, BSIZE) != BSIZE\033[0m\n");
 }
 void read_block(uint bnum, void *buf)
 {
 	bnum += FSOFFSET;
+	panic_on(bnum * BSIZE < 1024 * 1024, "\033[31mfuck\n\033[0m");
 	panic_on(lseek(fd, bnum * BSIZE, 0) != bnum * BSIZE, "\033[31m In read_block, lseek(fd, bnum * BSIZE, 0) != sec * BSIZE\033[0m\n");
 	panic_on(read(fd, buf, BSIZE) != BSIZE, "\033[31m In read_block, read(fd, buf, BSIZE) != BSIZE\033[0m\n");
 }
