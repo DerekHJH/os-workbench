@@ -214,7 +214,7 @@ void traverse_dir(char *path, uint curinum, uint previnum)
 				//printf("%s\n", nextpath);
 				int ffd = 0;
 				panic_on((ffd = open(nextpath, O_RDWR)) < 0, "\033[31m (ffd = open(nextpath, O_RDWR)) < 0 \033[0m\n");
-				panic_on((filecopy = mmap(NULL, lseek(ffd, 0, SEEK_END), PROT_READ | PROT_WRITE, MAP_SHARED, ffd, 0)) == (void *)-1, "\033[31 mmmap crash \033[0m\n");
+				panic_on((filecopy = mmap(NULL, lseek(ffd, 0, SEEK_END), PROT_READ | PROT_WRITE, MAP_SHARED, ffd, 0)) == (void *)-1, "\033[31m mmmap crash \033[0m\n");
 				inode_append(tempinum, filecopy, lseek(ffd, 0, SEEK_END));
 				munmap(filecopy, lseek(ffd, 0, SEEK_END));
 				close(ffd);
@@ -254,19 +254,25 @@ int main(int argc, char *argv[])
 
 	/*===========create proc and dev===============*/
 	char temppath[MAXPATH];
+	int tempfd = 0;
 	sprintf(temppath, "%sproc/", argv[3]);	
   mkdir(temppath, 0777);
 	sprintf(temppath, "%sdev/", argv[3]);	
 	mkdir(temppath, 0777);                	
 	sprintf(temppath, "%sdev/null", argv[3]);
-	close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
-
+	tempfd = open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777);	
+	printf("%ld\n", write(tempfd, "dev", 3));
+	close(tempfd);
+	
 	sprintf(temppath, "%sdev/zero", argv[3]);
-  close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
+  tempfd = open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777);	
+  printf("%ld\n", write(tempfd, "dev", 3));
+  close(tempfd);
 
 	sprintf(temppath, "%sdev/random", argv[3]);
-  close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
-
+  tempfd = open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777);	
+  printf("%ld\n", write(tempfd, "dev", 3));
+  close(tempfd);
 	/*============================*/
 
 	uint rootino = inode_alloc(T_DIR);
