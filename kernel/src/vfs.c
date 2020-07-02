@@ -309,6 +309,10 @@ void fileoperation(void *arg)
 		printf("%c", ans[i]);
 	printf("\n");
 
+	stat_t ss;
+	vfs_fstat(fd, (struct ufs_stat *)(&ss));	
+	printf("%u %u %u\n", ss.type, ss.id, ss.size);
+
 	while(1);
 }
 
