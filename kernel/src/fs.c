@@ -432,6 +432,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
+	printf("cpuinfo[]\n", ((inode_t *)cpuinfo[_cpu()].current->cwd)->ref);
 
   while((path = skipelem(path, name)) != 0)
   {

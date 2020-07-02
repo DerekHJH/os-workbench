@@ -269,30 +269,10 @@ static void vfs_init()
 	binit();
 	iinit();
 	fileinit();
-	for(int i = 0; i< _ncpu(); i++)
+	for(int i = 0; i < _ncpu(); i++)
 	{
 		cpuinfo[i].idle.cwd = namei("/");
 	}	
-	
-	printf("hahahahahha is %d\n", ((inode_t *)cpuinfo[0].idle.cwd)->ref);
-	
-	
-
-	/*
-	vfs_mkdir("/proc");
-	vfs_mkdir("/dev");
-
-	
-	inode_t *ip;
-  panic_on((ip = create("/dev/zero", T_FILE, ZERO, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
-  iunlockput(ip);
-
-  panic_on((ip = create("/dev/null", T_FILE, NUL, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
-  iunlockput(ip);
-
-  panic_on((ip = create("dev/random", T_FILE, RANDOM, 0)) == 0, "\033[31m vfs_init create \n \033[0m");
-  iunlockput(ip);
-	*/
 	return;
 }
 
