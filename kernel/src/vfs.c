@@ -269,9 +269,18 @@ static void vfs_init()
 	binit();
 	iinit();
 	fileinit();
+	char dirname[128], filename[128], content[128];
+	int fd = 0;
 	for(int i = 0; i < _ncpu(); i++)
 	{
 		cpuinfo[i].idle.cwd = namei("/");
+		sprintf(dirname, "/proc/%d", cpuinfo[i].idle.id);
+		sprintf(filename, "%s/name", dirname);
+		sprintf(content, "%s", cpuinfo[i].idle.name);
+		vfs_mkdir(dirname);
+		panic_on((fd = vfs_open(filename, O_CREAT | O_RDWR)) < 0, "\033[31m in vfs_init file open failed ! \n\033[0m");
+		vfs_write(fd, content, sizeof(content));
+		vfs_close(fd);	
 	}	
 	return;
 }
