@@ -109,28 +109,31 @@ static int vfs_open(const char *pathname, int flags)
   f->writable = (flags & O_WRONLY) || (flags & O_RDWR);
   return fd;
 }
+uint8_t zeros[1024 * 1024 * 8] = {0};
 static int vfs_lseek(int fd, int offset, int whence)
 {
+	int pos = 0;
 	switch(whence)
 	{
 		case SEEK_SET:
 		{
-			ofile[fd]->off = offset;
+			pos = offset;
 			break;
 		}
 		case SEEK_CUR:
     {
-      ofile[fd]->off += offset;
+      pos = ofile[fd]->off + offset;
     	break;
     }
 		case SEEK_END:
     {
-      ofile[fd]->off = ofile[fd]->ip->size + offset;
+      pos = ofile[fd]->ip->size + offset;
     	break;
     }
 		default: return -1;
 	}
-	return ofile[fd]->off;
+	if(pos > ofile[fd]->off)vfs_write(fd, zeros, pos - ofile[fd]->off);
+	return pos;
 }
 static int vfs_link(const char *oldpath, const char *newpath)
 {
