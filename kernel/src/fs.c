@@ -420,9 +420,9 @@ static char *skipelem(char *path, char *name)
   if(len >= DIRSIZ)memmove(name, s, DIRSIZ);
   else 
   {
-    memmove(name, s, len);
+    if(memmove(name, s, len) != name)printf("========================\n");
 
-	printf("len is %d\n", len);
+		printf("len is %d\n", len);
 
     name[len] = 0;
   }
