@@ -50,13 +50,13 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   panic_on((ip = ialloc(dp->dev, type)) == 0, "\033[31m create: ialloc\n \033[0m");
 
-	if(type == T_DEV)printf("dev->size %d\n", dp->size);
   ilock(ip);
   ip->major = major;
   ip->minor = minor;
   ip->nlink = 1;
   iupdate(ip);
 
+	if(type == T_DEV)printf("dev->size %d\n", dp->size);
   if(type == T_DIR)
 	{  // Create . and .. entries.
     dp->nlink++;  // for ".."
