@@ -66,9 +66,9 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   panic_on(dirlink(dp, name, ip->inum) < 0, "\033[31m create: dirlink\n \033[0m");
 
-	if(type == T_DEV)printf("dev->size %d\n", dp->size);
   iunlockput(dp);
 
+	if(type == T_DEV)printf("dev->size %d\n", dp->size);
   return ip;
 }
 static int vfs_open(const char *pathname, int flags)
