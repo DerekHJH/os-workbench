@@ -41,6 +41,11 @@ void fileoperation(void *arg)
 	vfs->write(fd, filename, strlen(filename));
 	printf("after write\n");
 	char ans[128] = "\0";
+	printf("before lseek\n");
+  vfs->lseek(fd, 0, SEEK_CUR);
+  printf("after lseek\n");
+
+
 	printf("before read\n");
 	vfs->read(fd, ans, strlen(filename));
 	printf("after read\n");
