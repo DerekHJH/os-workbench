@@ -457,11 +457,11 @@ static inode_t *namex(char *path, int nameiparent, char *name)
     iunlockput(ip);
     ip = next;
   }
-	printf("askhjavhucakabkcs\n");
-	assert(0);	
-	return 0;
   if(nameiparent)
   {
+		
+		printf("askhjavhucakabkcs\n");
+		assert(0);
     iput(ip);
     return 0;
   }
