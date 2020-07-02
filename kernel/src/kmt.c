@@ -179,7 +179,7 @@ static void kmt_init()
 		cpuinfo[i].idle.prev = NULL;
 		cpuinfo[i].idle.next = NULL;
 		cpuinfo[i].idle.context = NULL;	
-		cpuinfo[i].idle.cwd = NULL;
+		cpuinfo[i].idle.id = ++taskop.idcnt;
 	}
 	/*==========on_orq=================*/
 	os->on_irq(-999999999, _EVENT_NULL, kmt_context_save);

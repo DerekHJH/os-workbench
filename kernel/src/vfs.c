@@ -36,7 +36,6 @@ static inode_t *create(char *path, short type, short major, short minor)
   inode_t *ip, *dp;
   char name[DIRSIZ];
 
-	printf("%s\n", path);
   if((dp = nameiparent(path, name)) == 0)return 0;
 
   ilock(dp);
@@ -270,7 +269,10 @@ static void vfs_init()
 	binit();
 	iinit();
 	fileinit();
-	
+	for(int i = 0; i< _ncpu(); i++)
+	{
+		cpuinfo[i].idle.cwd = namei("/");
+	}	
 	
 	
 	
