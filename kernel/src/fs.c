@@ -420,11 +420,7 @@ static char *skipelem(char *path, char *name)
   if(len >= DIRSIZ)memmove(name, s, DIRSIZ);
   else 
   {
-		printf("s is %s\n", s);
     memmove(name, s, len);
-
-		printf("len is %d\n", len);
-
     name[len] = 0;
   }
 
@@ -467,12 +463,9 @@ static inode_t *namex(char *path, int nameiparent, char *name)
     iunlockput(ip);
     ip = next;
   }
-	printf("the nameiparent is %d\n", nameiparent);
   if(nameiparent)
   {
-		
 		printf("askhjavhucakabkcs\n");
-		assert(0);
     iput(ip);
     return 0;
   }
