@@ -293,8 +293,9 @@ void fileoperation(void *arg)
 	
 	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
 
-	printf("dev->size asiudqkb\n");
 	iunlockput(ip);
+
+	printf("dev->size asiudqkb\n");
 	/*
 	ip = create("/dev/null", T_DEV, NUL, 0);
 	iunlockput(ip);
