@@ -417,13 +417,14 @@ static char *skipelem(char *path, char *name)
   s = path;
   while(*path != '/' && *path != 0)path++;
   len = path - s;
-	printf("len is %d\n", len);
   if(len >= DIRSIZ)memmove(name, s, DIRSIZ);
   else 
   {
     memmove(name, s, len);
     name[len] = 0;
   }
+
+	printf("len is %d\n", len);
   while(*path == '/')path++;
   return path;
 }
