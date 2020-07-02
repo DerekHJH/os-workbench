@@ -81,6 +81,7 @@ void openclose_test(void* s)
   printf("read=%d\n",vfs->read(fd3,ss,5));
   printf("b.txt read in %d\n",vfs->open("b.txt",O_RDONLY));
   printf("%s\n",ss);
+	assert(0);
   while(1);
 }
 static void os_init() 
