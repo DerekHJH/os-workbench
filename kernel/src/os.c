@@ -92,7 +92,7 @@ static void os_init()
 	dev->init();
 	vfs->init();
 	sort_handles();
-	kmt->create(pmm->alloc(sizeof(task_t)), "openclose_test", openclose_test, "openclose_test");
+	//kmt->create(pmm->alloc(sizeof(task_t)), "openclose_test", openclose_test, "openclose_test");
 }
 
 static void os_run() 
