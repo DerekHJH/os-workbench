@@ -457,6 +457,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
     iunlockput(ip);
     ip = next;
   }
+	printf("the nameiparent is %d\n", nameiparent);
   if(nameiparent)
   {
 		
