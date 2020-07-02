@@ -7,7 +7,7 @@ clean:
 	rm -rf mkfs
 
 run: mkfs
-	@./mkfs 64 ../build/kernel-x86_64-qemu temp/
+	@./mkfs 64 ../build/kernel-x86_64-qemu fs-img/
 
 vim:
 	@vim mkfs.c
