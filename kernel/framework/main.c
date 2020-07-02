@@ -31,13 +31,24 @@ void consumer(void *arg)
 		_yield();
 	}
 }
+*/
+void fileoperation(void *arg)
+{
+	char *filename = (char *)arg;
+	int fd = vfs->open(filename, O_CREAT | O_RDWR);
+	vfs->write(fd, filename, strlen(filename));
+	char ans[128] = "\0";
+	vfs->read(fd, ans, strlen(filename));
+	printf("===================ans is %s\n", ans);
+}
 void create_threads()
 {
-	kmt->create(pmm->alloc(sizeof(task_t)), "producer1", producer, "producer1");
-	kmt->create(pmm->alloc(sizeof(task_t)), "consumer1", consumer, "consumer1");
-	kmt->sem_init(&mutex, "mutex", 1);
+	//kmt->create(pmm->alloc(sizeof(task_t)), "producer1", producer, "producer1");
+	//kmt->create(pmm->alloc(sizeof(task_t)), "consumer1", consumer, "consumer1");
+	//kmt->sem_init(&mutex, "mutex", 1);
+	kmt->create(pmm->alloc(sizeof(task_t)), "fileoperation", fileoperation, "fileoperation");
 }
-*/
+
 int main(const char *args) 
 {
 	printf("\033[31mCPU reset\033[0m\n");
@@ -45,6 +56,6 @@ int main(const char *args)
   _cte_init(os->trap);
   os->init();
 
-	//create_threads();
+	create_threads();
   _mpe_init(os->run);
 }

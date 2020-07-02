@@ -62,6 +62,7 @@ struct semaphore
 typedef struct __taskop
 {
 	int cpu;
+	int idcnt;
 	spinlock_t lock;
 }taskop_t;
 #endif

@@ -6,7 +6,6 @@
 #define Idle &(cpuinfo[_cpu()].idle)
 cpu_t cpuinfo[MAXNCPU];
 taskop_t taskop;
-int idcnt = 0;
 void insert_task(int cpu, task_t *task)
 {
 	task->next = NULL;
@@ -99,7 +98,7 @@ static int kmt_create(task_t *task, const char *name, void (*entry)(void *arg), 
 	task->stat = READY;
 	task->last = 0;
 	task->cwd = namei("/");
-	task->id = ++idcnt;
+	task->id = ++taskop.idcnt;
 
 	task->cpu = taskop.cpu;
 
@@ -165,6 +164,7 @@ static void kmt_init()
 	/*==========initialize taskop===========*/
 	kmt_spin_init(&taskop.lock, "taskop.lock");
 	taskop.cpu = 0;
+	taskop.idcnt = 0;
 	/*==========initialize cpu=========*/
 	for(int i = 0; i < _ncpu(); i++)
 	{
