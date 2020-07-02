@@ -38,10 +38,11 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   if((dp = nameiparent(path, name)) == 0)return 0;
   ilock(dp);
-	if(type == T_DEV)printf("dev->size %d\n", dp->size);
 
   if((ip = dirlookup(dp, name, 0)) != 0)
 	{
+
+		if(type == T_DEV)printf("dev->size %d\n", dp->size);
     iunlockput(dp);
     ilock(ip);
     if(type == T_FILE && ip->type == T_FILE)return ip;
