@@ -122,7 +122,6 @@ void iput(inode_t *ip)
 
 	kmt->spin_lock(&icache.lock);
   ip->ref--;
-	printf("ascjasvchasvkjcas\n");
   kmt->spin_unlock(&icache.lock);
 
 	return;
