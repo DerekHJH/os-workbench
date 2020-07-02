@@ -296,30 +296,6 @@ static void vfs_init()
 	return;
 }
 
-
-void fileoperation(void *arg)
-{
-
-	char ans[128];
-	printf("before link\n");
-	vfs_link("shit", "foo");
-	printf("after link\n");
-	printf("before open\n");
-	int fd = vfs_open("foo", O_RDWR);
-	printf("after open\n");
-	vfs_read(fd, ans, 25);
-	for(int i = 0; i < 25; i++)
-		printf("%c", ans[i]);
-	printf("\n");
-
-	stat_t ss;
-	vfs_fstat(fd, (struct ufs_stat *)(&ss));	
-	printf("askjasvxaksxkas\n");
-	printf("%d %d %d\n", ss.type, ss.id, ss.size);
-
-	while(1);
-}
-
 MODULE_DEF(vfs) = 
 {
 	.init = vfs_init,
