@@ -41,9 +41,19 @@ void openclose_test(void* s)
 	vfs->write(fd, ss, 8194);
 	vfs->lseek(fd, 26 * 200, SEEK_SET);
 	vfs->read(fd2, ans, 8194);
+	
+	
+	
+	vfs->close(fd2);
+	memset(ss, 0, 8194);
+	vfs->lseek(fd, 100, SEEK_SET);
+	vfs->write(fd, ss, 500);
+	vfs->lseek(fd, 0, SEEK_SET);
+	vfs->read(fd, ans, 8194);
 	for(int i = 0; i < 8194; i++)
-		printf("%d ", ans[i]);
-	printf("\n");
+  	printf("%d ", ans[i]);
+  printf("\n");
+
   while(1);
 }
 static void os_init() 
