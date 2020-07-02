@@ -295,51 +295,13 @@ static void vfs_init()
 
 void fileoperation(void *arg)
 {
-	
-
-	char *filename = (char *)arg;
-
-	printf("filename is %s\n", filename);
-	printf("before open\n");
-	int fd = vfs->open(filename, O_CREAT | O_RDWR);
-	printf("after open\n");
-	if(fd < 0)
-	{
-		printf("shit fd is negative\n");
-	}
-	printf("before write\n");
-	vfs->write(fd, filename, strlen(filename));
-	printf("after write\n");
-	char ans[128] = "\0";
-	printf("before lseek\n");
-  vfs->lseek(fd, 0, SEEK_SET);
-  printf("after lseek\n");
-
-
-	printf("before read\n");
-	vfs->read(fd, ans, strlen(filename));
-	printf("after read\n");
-	printf("===================ans is %s\n", ans);
-
-	printf("====================================================\n\n");
-	
-	
-	char fname[128];
-	char ans2[128];
-	sprintf(fname, "/proc/2/name");
-  int fd2 = vfs->open(fname, O_RDWR);
-	if(fd2 < 0)
-  {
-  	printf("shit fd is negative\n");
-  }
-	printf("before read\n"); 
-	vfs->read(fd2, ans2, 5);
-  printf("after read\n");
-	for(int i = 0; i < 12; i++)
-	printf("%x ", ans2[i]);
+	char ans[128];
+	vfs_link("shit", "foo");
+	int fd = vfs_open("foo", O_RDWR);
+	vfs_read(fd, ans, 25);
+	for(int i = 0; i < 25; i++)
+		printf("%c", ans[i]);
 	printf("\n");
-	printf("=======ans is %s\n", ans2);
-	
 
 	while(1);
 }
