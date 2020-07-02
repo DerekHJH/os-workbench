@@ -36,6 +36,7 @@ static inode_t *create(char *path, short type, short major, short minor)
   inode_t *ip, *dp;
   char name[DIRSIZ];
 
+	printf("here !!!!!!!!!!!!\n");
   if((dp = nameiparent(path, name)) == 0)return 0;
   ilock(dp);
 
@@ -79,7 +80,6 @@ static int vfs_open(const char *pathname, int flags)
   if(flags & O_CREAT)
 	{
     ip = create((char *)pathname, T_FILE, 0, 0);
-		printf("finish create\n");
     if(ip == 0)return -1;
   } 
 	else 
