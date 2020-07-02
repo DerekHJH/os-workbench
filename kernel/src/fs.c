@@ -435,6 +435,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
+		printf("askhjavhucakabkcs\n");
   while((path = skipelem(path, name)) != 0)
   {
     ilock(ip);
@@ -458,7 +459,6 @@ static inode_t *namex(char *path, int nameiparent, char *name)
     ip = next;
   }
 
-		printf("askhjavhucakabkcs\n");
   if(nameiparent)
   {
     iput(ip);
