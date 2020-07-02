@@ -132,7 +132,12 @@ static int vfs_lseek(int fd, int offset, int whence)
     }
 		default: return -1;
 	}
-	if(pos > ofile[fd]->off)vfs_write(fd, zeros, pos - ofile[fd]->off);
+	if(pos > ofile[fd]->ip->size)
+	{
+		ofile[fd]->off = ofile[fd]->ip->size;
+		vfs_write(fd, zeros, pos - ofile[fd]->ip->size);
+	}
+	ofile[fd]->off = pos;
 	return pos;
 }
 static int vfs_link(const char *oldpath, const char *newpath)
