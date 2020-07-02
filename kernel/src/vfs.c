@@ -329,7 +329,7 @@ void fileoperation(void *arg)
 	*/
 	char fname[128];
 	char ans2[128];
-	sprintf(fname, "/proc/1/name");
+	sprintf(fname, "/proc/2/name");
   int fd2 = vfs->open(fname, O_RDWR);
 	if(fd2 < 0)
   {
