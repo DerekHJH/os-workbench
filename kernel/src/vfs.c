@@ -103,7 +103,6 @@ static int vfs_open(const char *pathname, int flags)
   }
   iunlock(ip);
 
-	printf("\033[30m, the path is %s\n\033[0m", pathname);
   f->type = FD_INODE;
   f->ip = ip;
   f->off = 0;
@@ -286,6 +285,62 @@ static void vfs_init()
 		vfs_close(fd);	
 	}	
 	return;
+}
+
+
+void fileoperation(void *arg)
+{
+	/*==============necessary operation========*/
+	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
+	iunlockput(ip);
+	ip = create("/dev/null", T_DEV, NUL, 0);
+	iunlockput(ip);
+	ip = create("/dev/random", T_DEV, RANDOM, 0);
+	iunlockput(ip);
+
+
+
+	/*===========necessary operation===========*/
+
+	char *filename = (char *)arg;
+
+	printf("filename is %s\n", filename);
+	printf("before open\n");
+	int fd = vfs->open(filename, O_CREAT | O_RDWR);
+	printf("after open\n");
+	if(fd < 0)
+	{
+		printf("shit fd is negative\n");
+	}
+	printf("before write\n");
+	vfs->write(fd, filename, strlen(filename));
+	printf("after write\n");
+	char ans[128] = "\0";
+	printf("before lseek\n");
+  vfs->lseek(fd, 0, SEEK_SET);
+  printf("after lseek\n");
+
+
+	printf("before read\n");
+	vfs->read(fd, ans, strlen(filename));
+	printf("after read\n");
+	printf("===================ans is %s\n", ans);
+
+	printf("====================================================\n\n");
+
+	char fname[128];
+	sprintf(fname, "/dev/zero");
+  fd = vfs->open(fname, O_CREAT | O_RDWR);
+	if(fd < 0)
+  {
+  	printf("shit fd is negative\n");
+  }
+	printf("before read\n"); 
+	vfs->read(fd, ans, 3);
+	ans[3] = 0;
+  printf("after read\n");
+	printf("=============ans is %s\n", ans);
+	while(1);
 }
 
 MODULE_DEF(vfs) = 

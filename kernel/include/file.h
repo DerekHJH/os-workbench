@@ -3,7 +3,7 @@
 
 typedef struct file 
 {
-  enum { FD_NONE, FD_INODE, FD_DEV } type;
+  enum { FD_NONE, FD_INODE  } type;
   int ref; // reference count
   char readable;
   char writable;

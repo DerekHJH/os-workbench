@@ -145,7 +145,7 @@ int readi(inode_t *ip, char *dst, uint32_t off, uint32_t n)
   buf_t *bp;
 
 	
-	if(ip->major > 0)
+	if(ip->type == T_DEV && ip->major > 0)
 	{
 		if(ip->major < 0 || ip->major >= NDEV || !devices[ip->major]->ops->read)return -1;
 		return devices[ip->major]->ops->read(devices[ip->major], off, dst, n);  
@@ -169,9 +169,9 @@ int writei(inode_t *ip, char *src, uint32_t off, uint32_t n)
   uint32_t tot, m;
   buf_t *bp;
 
-	if(ip->major > 0)
+	if(ip->type == T_DEV && ip->major > 0)
   {
-  	if(ip->major < 0 || ip->major >= NDEV || !devices[ip->major]->ops->write)return -1;
+  	if(ip->major < 0 || ip->major > NDEV || !devices[ip->major]->ops->write)return -1;
   	return devices[ip->major]->ops->write(devices[ip->major], off, src, n);  
   }
 
