@@ -290,15 +290,13 @@ static void vfs_init()
   ip = create("/dev/random", T_DEV, RANDOM, 0);
   iunlockput(ip);
 
-	printf("before link\n");
 	return;
 }
 
 
 void fileoperation(void *arg)
 {
-	printf("akhxvasjhvasjhxas\n");
-	/*
+
 	char ans[128];
 	printf("before link\n");
 	vfs_link("shit", "foo");
@@ -310,7 +308,7 @@ void fileoperation(void *arg)
 	for(int i = 0; i < 25; i++)
 		printf("%c", ans[i]);
 	printf("\n");
-*/
+
 	while(1);
 }
 
