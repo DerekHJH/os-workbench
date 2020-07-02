@@ -296,7 +296,7 @@ static void vfs_init()
 void fileoperation(void *arg)
 {
 	
-/*
+
 	char *filename = (char *)arg;
 
 	printf("filename is %s\n", filename);
@@ -322,8 +322,8 @@ void fileoperation(void *arg)
 	printf("===================ans is %s\n", ans);
 
 	printf("====================================================\n\n");
-	*/
-	/*
+	
+	
 	char fname[128];
 	char ans2[128];
 	sprintf(fname, "/proc/2/name");
@@ -339,7 +339,7 @@ void fileoperation(void *arg)
 	printf("%x ", ans2[i]);
 	printf("\n");
 	printf("=======ans is %s\n", ans2);
-	*/
+	
 
 	while(1);
 }
