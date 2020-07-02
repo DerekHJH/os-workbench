@@ -1,7 +1,7 @@
 #ifndef VFSH
 #define VFSH
 
-#define BSIZE 4096
+#define BSIZE 512
 
 #define NDIRECT 12
 #define NINDIRECT (BSIZE / sizeof(uint))
