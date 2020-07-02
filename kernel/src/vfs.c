@@ -329,18 +329,21 @@ void fileoperation(void *arg)
 	*/
 	char fname[128];
 	char ans2[128];
-	sprintf(fname, "/dev/random");
+	sprintf(fname, "/proc/1/name");
   int fd2 = vfs->open(fname, O_RDWR);
 	if(fd2 < 0)
   {
   	printf("shit fd is negative\n");
   }
 	printf("before read\n"); 
-	vfs->read(fd2, ans2, 12);
+	vfs->read(fd2, ans2, 5);
   printf("after read\n");
 	for(int i = 0; i < 12; i++)
 	printf("%x ", ans2[i]);
 	printf("\n");
+	printf("=======ans is %s\n", ans2);
+
+
 	while(1);
 }
 
