@@ -336,10 +336,11 @@ void fileoperation(void *arg)
   	printf("shit fd is negative\n");
   }
 	printf("before read\n"); 
-	vfs->read(fd2, ans2, 3);
-	ans2[3] = 0;
+	vfs->read(fd2, ans2, 12);
   printf("after read\n");
-	printf("=============ans is %s\n", ans2);
+	for(int i = 0; i < 12; i++)
+	printf("%x ", ans2[i]);
+	printf("\n");
 	while(1);
 }
 
