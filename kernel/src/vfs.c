@@ -283,23 +283,19 @@ static void vfs_init()
 		vfs_write(fd, content, sizeof(content));
 		vfs_close(fd);	
 	}	
+	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
+  iunlockput(ip);
+  ip = create("/dev/null", T_DEV, NUL, 0);
+  iunlockput(ip);
+  ip = create("/dev/random", T_DEV, RANDOM, 0);
+  iunlockput(ip);
 	return;
 }
 
 
 void fileoperation(void *arg)
 {
-	/*==============necessary operation========*/
 	
-	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
-	iunlockput(ip);
-	ip = create("/dev/null", T_DEV, NUL, 0);
-	iunlockput(ip);
-	ip = create("/dev/random", T_DEV, RANDOM, 0);
-	iunlockput(ip);
-
-
-	/*===========necessary operation===========*/
 /*
 	char *filename = (char *)arg;
 
@@ -327,6 +323,7 @@ void fileoperation(void *arg)
 
 	printf("====================================================\n\n");
 	*/
+	/*
 	char fname[128];
 	char ans2[128];
 	sprintf(fname, "/proc/2/name");
@@ -342,7 +339,7 @@ void fileoperation(void *arg)
 	printf("%x ", ans2[i]);
 	printf("\n");
 	printf("=======ans is %s\n", ans2);
-
+	*/
 
 	while(1);
 }

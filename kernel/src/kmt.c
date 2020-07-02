@@ -117,8 +117,6 @@ static int kmt_create(task_t *task, const char *name, void (*entry)(void *arg), 
   panic_on((fd = vfs->open(filename, O_CREAT | O_RDWR)) < 0, "\033[31m in vfs_init file open failed ! \n\033[0m");
   vfs->write(fd, (char *)name, strlen(name));
   vfs->close(fd);	
-
-
 	/*====================*/
 	kmt_spin_unlock(&taskop.lock);
 #ifdef DEBUG
