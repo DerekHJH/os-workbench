@@ -40,8 +40,10 @@ void openclose_test(void* s)
   }
   ret=vfs->lseek(fd3,9*4096,SEEK_SET);
   ret=vfs->read(fd3,ss,8192);
+	printf("============ss is %s\n", ss);
   ret=vfs->write(fd2,ss,4096);
   ret=vfs->read(fd3,ss,8192);
+	printf("============ss is %s\n", ss);
   while ((ret=vfs->read(fd3,ss,4100))>0)
   {
     ++yaq;
@@ -93,7 +95,7 @@ static void os_init()
 	dev->init();
 	vfs->init();
 	sort_handles();
-	//kmt->create(pmm->alloc(sizeof(task_t)), "openclose_test", openclose_test, "openclose_test");
+	kmt->create(pmm->alloc(sizeof(task_t)), "openclose_test", openclose_test, "openclose_test");
 }
 
 static void os_run() 
