@@ -35,9 +35,10 @@ void consumer(void *arg)
 void fileoperation(void *arg)
 {
 	char *filename = (char *)arg;
+
+	printf("filename is %s\n", filename);
 	printf("before open\n");
 	int fd = vfs->open(filename, O_CREAT | O_RDWR);
-	printf("filename is %s\n", filename);
 	printf("after open\n");
 	if(fd < 0)
 	{
