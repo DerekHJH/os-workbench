@@ -62,7 +62,7 @@ void fileoperation(void *arg)
   }
 	printf("before read\n"); 
 	vfs->read(fd, ans, 3);
-	ans[4] = 0;
+	ans[3] = 0;
   printf("after read\n");
 	printf("=============ans is %s\n", ans);
 	while(1);
