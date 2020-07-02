@@ -300,7 +300,7 @@ void fileoperation(void *arg)
 
 
 	/*===========necessary operation===========*/
-
+/*
 	char *filename = (char *)arg;
 
 	printf("filename is %s\n", filename);
@@ -326,19 +326,20 @@ void fileoperation(void *arg)
 	printf("===================ans is %s\n", ans);
 
 	printf("====================================================\n\n");
-	
+	*/
 	char fname[128];
+	char ans2[128];
 	sprintf(fname, "/dev/zero");
-  fd = vfs->open(fname, O_CREAT | O_RDWR);
-	if(fd < 0)
+  int fd2 = vfs->open(fname, O_CREAT | O_RDWR);
+	if(fd2 < 0)
   {
   	printf("shit fd is negative\n");
   }
 	printf("before read\n"); 
-	vfs->read(fd, ans, 3);
-	ans[3] = 0;
+	vfs->read(fd2, ans2, 3);
+	ans2[3] = 0;
   printf("after read\n");
-	printf("=============ans is %s\n", ans);
+	printf("=============ans is %s\n", ans2);
 	while(1);
 }
 
