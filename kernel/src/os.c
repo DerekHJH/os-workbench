@@ -36,7 +36,7 @@ void openclose_test(void* s)
 		ss[i] = i % 26 + 1;
 	vfs->write(fd, ss, 8194);
 	vfs->lseek(fd, 10000, SEEK_END);
-	vfs->lseek(fd, 8000, SEEK_SET);
+	vfs->lseek(fd, 10000, SEEK_SET);
 	vfs->write(fd, ss, 8194);
 	vfs->lseek(fd, 26 * 200, SEEK_SET);
 	vfs->read(fd, ans, 8194);
