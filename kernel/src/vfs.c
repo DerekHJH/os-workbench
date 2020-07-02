@@ -295,6 +295,7 @@ static void vfs_init()
 
 void fileoperation(void *arg)
 {
+	printf("akhxvasjhvasjhxas\n");
 	/*
 	char ans[128];
 	printf("before link\n");
