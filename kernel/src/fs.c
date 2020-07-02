@@ -103,8 +103,9 @@ void iunlock(inode_t *ip)
 
 void iput(inode_t *ip)
 {
-	kmt->sem_wait(&ip->sem);
+
 	printf("askhkcvasijcbaskjcasj\n");
+	kmt->sem_wait(&ip->sem);
   if(ip->valid && ip->nlink == 0)
   {
     kmt->spin_lock(&icache.lock);
