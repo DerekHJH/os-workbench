@@ -292,21 +292,15 @@ void fileoperation(void *arg)
 	/*==============necessary operation========*/
 	
 	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
-
 	iunlockput(ip);
-
-	printf("dev->size asiudqkb\n");
-	/*
 	ip = create("/dev/null", T_DEV, NUL, 0);
 	iunlockput(ip);
 	ip = create("/dev/random", T_DEV, RANDOM, 0);
 	iunlockput(ip);
-  */
 
 
 	/*===========necessary operation===========*/
 
-	/*
 	char *filename = (char *)arg;
 
 	printf("filename is %s\n", filename);
@@ -345,7 +339,6 @@ void fileoperation(void *arg)
 	ans[3] = 0;
   printf("after read\n");
 	printf("=============ans is %s\n", ans);
-	*/
 	while(1);
 }
 
