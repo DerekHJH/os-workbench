@@ -68,7 +68,6 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   iunlockput(dp);
 
-	if(type == T_DEV)printf("dev->size %d\n", dp->size);
   return ip;
 }
 static int vfs_open(const char *pathname, int flags)
@@ -293,6 +292,8 @@ void fileoperation(void *arg)
 	/*==============necessary operation========*/
 	
 	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
+
+	printf("dev->size asiudqkb\n");
 	iunlockput(ip);
 	/*
 	ip = create("/dev/null", T_DEV, NUL, 0);
