@@ -417,6 +417,7 @@ static char *skipelem(char *path, char *name)
   s = path;
   while(*path != '/' && *path != 0)path++;
   len = path - s;
+	printf("len is %d\n", len);
   if(len >= DIRSIZ)memmove(name, s, DIRSIZ);
   else 
   {
@@ -435,7 +436,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
-	if(*path == 'f')
+	if(*path == 'f')//
 	{
 		path = skipelem(path, name);
 		printf("xkjasvhajk %s\n", path);
