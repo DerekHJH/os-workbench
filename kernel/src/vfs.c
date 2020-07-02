@@ -42,7 +42,6 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   if((ip = dirlookup(dp, name, 0)) != 0)
 	{
-		printf("asjkcbaskjcbaskjcvaksjsc\n");
     iunlockput(dp);
     ilock(ip);
     if(type == T_FILE && ip->type == T_FILE)return ip;
@@ -50,6 +49,7 @@ static inode_t *create(char *path, short type, short major, short minor)
     return 0;
   }
 
+	printf("hjhjhjhjhjhjhjh");
   panic_on((ip = ialloc(dp->dev, type)) == 0, "\033[31m create: ialloc\n \033[0m");
 
   ilock(ip);
