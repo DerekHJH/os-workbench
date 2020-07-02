@@ -432,10 +432,11 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 	
   inode_t *ip, *next;
 
-	printf("in namex %s\n", path);
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
+	path = skipelem(path, name);
+	printf("xkjasvhajk %s\n", path);
   while((path = skipelem(path, name)) != 0)
   {
     ilock(ip);
