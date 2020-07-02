@@ -438,7 +438,6 @@ static inode_t *namex(char *path, int nameiparent, char *name)
     ilock(ip);
     if(ip->type != T_DIR)
     {
-			printf("ip is DRI!!!!!\n");
       iunlockput(ip);
       return 0;
     }
