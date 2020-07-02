@@ -104,6 +104,7 @@ void iunlock(inode_t *ip)
 void iput(inode_t *ip)
 {
 	kmt->sem_wait(&ip->sem);
+	printf("askhkcvasijcbaskjcasj\n");
   if(ip->valid && ip->nlink == 0)
   {
     kmt->spin_lock(&icache.lock);
@@ -435,7 +436,6 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 
   while((path = skipelem(path, name)) != 0)
   {
-		printf("aschjasvxhasx\n");
     ilock(ip);
     if(ip->type != T_DIR)
     {
