@@ -311,6 +311,7 @@ void fileoperation(void *arg)
 
 	stat_t ss;
 	vfs_fstat(fd, (struct ufs_stat *)(&ss));	
+	printf("askjasvxaksxkas\n");
 	printf("%u %u %u\n", ss.type, ss.id, ss.size);
 
 	while(1);
