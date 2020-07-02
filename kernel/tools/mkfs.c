@@ -254,12 +254,20 @@ int main(int argc, char *argv[])
 
 	/*===========create proc and dev===============*/
 	char temppath[MAXPATH];
-	sprintf(temppath, "%sdev/", argv[3]);	
-	//printf("%s\n", temppath);
-	mkdir(temppath, 0777);
+	char tempname[MAXPATH];
 	sprintf(temppath, "%sproc/", argv[3]);	
-	//printf("%s\n", temppath);
   mkdir(temppath, 0777);
+	sprintf(temppath, "%sdev/", argv[3]);	
+	mkdir(temppath, 0777);                	
+	sprintf(temppath, "%sdev/null", argv[3]);
+	close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
+
+	sprintf(temppath, "%sdev/zero", argv[3]);
+  close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
+
+	sprintf(temppath, "%sdev/random", argv[3]);
+  close(open(temppath, O_CREAT | O_RDWR | O_TRUNC, 0777));	
+
 	/*============================*/
 
 	uint rootino = inode_alloc(T_DIR);
