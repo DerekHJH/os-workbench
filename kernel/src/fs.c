@@ -103,11 +103,10 @@ void iunlock(inode_t *ip)
 
 void iput(inode_t *ip)
 {
-
-	printf("askhkcvasijcbaskjcasj\n");
 	kmt->sem_wait(&ip->sem);
   if(ip->valid && ip->nlink == 0)
   {
+		printf("ascljasvhabkjasbcjkasb\n");
     kmt->spin_lock(&icache.lock);
     int r = ip->ref;
     kmt->spin_unlock(&icache.lock);
@@ -430,17 +429,11 @@ static char *skipelem(char *path, char *name)
 extern cpu_t cpuinfo[MAXNCPU];
 static inode_t *namex(char *path, int nameiparent, char *name)
 {
-	
   inode_t *ip, *next;
 
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
-	if(*path == 'f')//
-	{
-		path = skipelem(path, name);
-		printf("xkjasvhajk %s\n", path);
-	}
   while((path = skipelem(path, name)) != 0)
   {
     ilock(ip);
@@ -465,7 +458,6 @@ static inode_t *namex(char *path, int nameiparent, char *name)
   }
   if(nameiparent)
   {
-		printf("askhjavhucakabkcs\n");
     iput(ip);
     return 0;
   }
