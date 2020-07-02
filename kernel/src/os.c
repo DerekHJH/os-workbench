@@ -41,7 +41,7 @@ void openclose_test(void* s)
   ret=vfs->lseek(fd3,9*4096,SEEK_SET);
   ret=vfs->read(fd3,ss,8192);
 	for(int i = 0; i <= 100; i++)
-	printf("%d", ss[i]);
+	printf("%d", ss[i] + 1);
 	printf("\n");
   ret=vfs->write(fd2,ss,4096);
   ret=vfs->read(fd3,ss,8192);
