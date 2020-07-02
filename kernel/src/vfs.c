@@ -296,8 +296,12 @@ static void vfs_init()
 void fileoperation(void *arg)
 {
 	char ans[128];
+	printf("before link\n");
 	vfs_link("shit", "foo");
+	printf("after link\n");
+	printf("before open\n");
 	int fd = vfs_open("foo", O_RDWR);
+	printf("after open\n");
 	vfs_read(fd, ans, 25);
 	for(int i = 0; i < 25; i++)
 		printf("%c", ans[i]);
