@@ -49,7 +49,6 @@ static inode_t *create(char *path, short type, short major, short minor)
     return 0;
   }
 
-	printf("hjhjhjhjhjhjhjh");
   panic_on((ip = ialloc(dp->dev, type)) == 0, "\033[31m create: ialloc\n \033[0m");
 
   ilock(ip);

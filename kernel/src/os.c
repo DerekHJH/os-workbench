@@ -60,7 +60,7 @@ static void os_init()
 	dev->init();
 	vfs->init();
 	sort_handles();
-	kmt->create(pmm->alloc(sizeof(task_t)), "fileoperation", fileoperation, "fileoperation");
+	//kmt->create(pmm->alloc(sizeof(task_t)), "fileoperation", fileoperation, "fileoperation");
 }
 
 static void os_run() 
