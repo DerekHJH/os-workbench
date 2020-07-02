@@ -329,7 +329,7 @@ void fileoperation(void *arg)
 	*/
 	char fname[128];
 	char ans2[128];
-	sprintf(fname, "/dev/zero");
+	sprintf(fname, "/dev/random");
   int fd2 = vfs->open(fname, O_RDWR);
 	if(fd2 < 0)
   {
