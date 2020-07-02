@@ -259,7 +259,6 @@ inode_t *namei(char *path)
 
 inode_t *nameiparent(char *path, char *name)
 {
-	printf("in nameiparent ipath is %s\n", path);
   return namex(path, 1, name);
 }
 
@@ -433,6 +432,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 	
   inode_t *ip, *next;
 
+	printf("in namex %s\n", path);
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
