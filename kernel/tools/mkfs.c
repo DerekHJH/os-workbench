@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
 	panic_on(BSIZE % sizeof(dirent_t) != 0, "\033[31m BSIZE mod sizeof(dirent_t) != 0\033[0m\n");
 	//printf("FSSTART is 0x%x\nFSSIZE is 0x%x\nINODESTART is 0x%x\nNINODEBLOCK is 0x%lx\nBMSTART is 0x%lx\nNBM is 0x%x\nDATASTART is 0x%lx\nNDATA is 0x%lx\nNMETADATA is 0x%lx\n", FSSTART, FSSIZE, INODESTART, NINODEBLOCK, BMSTART, NBM, DATASTART, NDATA, NMETADATA);
 
-	uint32_t imgsize = atoi(argv[1]) * 1024 * 1024;
+	//uint32_t imgsize = atoi(argv[1]) * 1024 * 1024;
   assert((fd = open(argv[2], O_RDWR)) > 0);
   assert((ftruncate(fd, FSSIZE + FSOFFSET)) == 0);
   //assert((disk = mmap(NULL, IMG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != (void *)-1);
@@ -254,7 +254,6 @@ int main(int argc, char *argv[])
 
 	/*===========create proc and dev===============*/
 	char temppath[MAXPATH];
-	char tempname[MAXPATH];
 	sprintf(temppath, "%sproc/", argv[3]);	
   mkdir(temppath, 0777);
 	sprintf(temppath, "%sdev/", argv[3]);	
