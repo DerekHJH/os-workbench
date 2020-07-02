@@ -31,15 +31,16 @@ uint8_t ss[8194], ans[8194];
 void openclose_test(void* s)
 {
 	int fd = vfs->open("a.c", O_RDWR);
-	panic_on(fd < 0, "\033[31m fuck read\n\033[0m");
+	int fd2 = vfs->dup(fd);
+	panic_on(fd < 0 || fd2 < 0, "\033[31m fuck read\n\033[0m");
 	for(int i = 0; i < 8194; i++)
 		ss[i] = i % 26 + 1;
 	vfs->write(fd, ss, 8194);
 	vfs->lseek(fd, 10000, SEEK_END);
-	vfs->lseek(fd, 10000, SEEK_SET);
+	vfs->lseek(fd2, 10000, SEEK_SET);
 	vfs->write(fd, ss, 8194);
 	vfs->lseek(fd, 26 * 200, SEEK_SET);
-	vfs->read(fd, ans, 8194);
+	vfs->read(fd2, ans, 8194);
 	for(int i = 0; i < 8194; i++)
 		printf("%d ", ans[i]);
 	printf("\n");
