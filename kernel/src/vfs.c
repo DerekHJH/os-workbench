@@ -291,13 +291,14 @@ static void vfs_init()
 void fileoperation(void *arg)
 {
 	/*==============necessary operation========*/
+	/*
 	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
 	iunlockput(ip);
 	ip = create("/dev/null", T_DEV, NUL, 0);
 	iunlockput(ip);
 	ip = create("/dev/random", T_DEV, RANDOM, 0);
 	iunlockput(ip);
-
+*/
 
 
 	/*===========necessary operation===========*/
