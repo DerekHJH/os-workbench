@@ -42,7 +42,7 @@ void fileoperation(void *arg)
 	printf("after write\n");
 	char ans[128] = "\0";
 	printf("before lseek\n");
-  vfs->lseek(fd, 0, SEEK_CUR);
+  vfs->lseek(fd, 0, SEEK_SET);
   printf("after lseek\n");
 
 
