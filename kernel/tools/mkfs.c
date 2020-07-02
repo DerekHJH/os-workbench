@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
 
 	uint32_t imgsize = atoi(argv[1]) * 1024 * 1024;
   assert((fd = open(argv[2], O_RDWR)) > 0);
-  assert((ftruncate(fd, imgsize)) == 0);
+  assert((ftruncate(fd, FSSIZE + FSOFFSET)) == 0);
   //assert((disk = mmap(NULL, IMG_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)) != (void *)-1);
   //initialize with zeros
 	char zeros[BSIZE] = {0};
