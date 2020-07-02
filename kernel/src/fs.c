@@ -421,7 +421,7 @@ static char *skipelem(char *path, char *name)
   else 
   {
 		printf("s is %s\n", s);
-    memcpy(name, s, len);
+    memmove(name, s, len);
 
 		printf("len is %d\n", len);
 
