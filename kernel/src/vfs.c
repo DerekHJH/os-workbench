@@ -283,6 +283,7 @@ static void vfs_init()
 		vfs_write(fd, content, sizeof(content));
 		vfs_close(fd);	
 	}	
+	printf("before link\n");
 	inode_t *ip = create("/dev/zero", T_DEV, ZERO, 0);
   iunlockput(ip);
   ip = create("/dev/null", T_DEV, NUL, 0);
