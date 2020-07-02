@@ -435,8 +435,8 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 
   while((path = skipelem(path, name)) != 0)
   {
-		printf("yes??????\n");
     ilock(ip);
+		printf("ip->size is %x\n", ip->size);
     if(ip->type != T_DIR)
     {
       iunlockput(ip);
