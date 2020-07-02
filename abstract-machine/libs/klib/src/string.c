@@ -115,19 +115,13 @@ int memcmp(const void* s1, const void* s2, size_t n)
 	if(p==n)return 0;
   return 0;
 }
-void *memmove(void* dest, const void* src, size_t n){
-    char* _dest=dest;
-    const char* _src =src ;
-    if(dest>src){
-        for(int i=n-1;i>=0;++i){
-            _dest[i]=_src[i];
-        }
-    }else{
-        for(int i=0;i<n;++i){
-            _dest[i]=_src[i];
-        }
-    }
-    return dest;
+void *memmove(void* dest, const void* src, size_t n)
+{
+	char *_dest = (char *)dest;
+	char * _src = (char *)src;
+	for(int i = 0; i < n; i++)
+		_dest[i] = _src[i];
+  return dest;
 }
 
 #endif
