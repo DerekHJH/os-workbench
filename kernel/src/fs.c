@@ -106,7 +106,6 @@ void iput(inode_t *ip)
 	kmt->sem_wait(&ip->sem);
   if(ip->valid && ip->nlink == 0)
   {
-		printf("ascljasvhabkjasbcjkasb\n");
     kmt->spin_lock(&icache.lock);
     int r = ip->ref;
     kmt->spin_unlock(&icache.lock);
@@ -123,6 +122,7 @@ void iput(inode_t *ip)
 
 	kmt->spin_lock(&icache.lock);
   ip->ref--;
+	printf("ascjasvchasvkjcas\n");
   kmt->spin_unlock(&icache.lock);
 
 	return;
