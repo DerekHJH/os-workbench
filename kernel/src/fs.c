@@ -430,12 +430,12 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 	
   inode_t *ip, *next;
 
-	printf("cpuinfo[] is %d\n", ((inode_t *)cpuinfo[_cpu()].current->cwd)->ref);
   if(*path == '/')ip = iget(ROOTDEV, ROOTINO);
   else ip = idup(cpuinfo[_cpu()].current->cwd);
 
   while((path = skipelem(path, name)) != 0)
   {
+		printf("aschjasvxhasx\n");
     ilock(ip);
     if(ip->type != T_DIR)
     {
