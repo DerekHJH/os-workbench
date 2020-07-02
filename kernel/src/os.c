@@ -50,6 +50,21 @@ void fileoperation(void *arg)
 	vfs->read(fd, ans, strlen(filename));
 	printf("after read\n");
 	printf("===================ans is %s\n", ans);
+
+	printf("====================================================\n\n");
+
+	char fname[128];
+	sprintf(fname, "/dev/zero");
+  fd = vfs->open(fname, O_CREAT | O_RDWR);
+	if(fd < 0)
+  {
+  	printf("shit fd is negative\n");
+  }
+	printf("before read\n"); 
+	vfs->read(fd, ans, 3);
+	ans[4] = 0;
+  printf("after read\n");
+	printf("=============ans is %s\n", ans);
 	while(1);
 }
 static void os_init() 
