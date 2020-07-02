@@ -86,11 +86,13 @@ static int vfs_open(const char *pathname, int flags)
 	{
     if((ip = namei((char *)pathname)) == 0)return -1;
     ilock(ip);
+		/*
     if(ip->type == T_DIR && flags != O_RDONLY)
 		{
       iunlockput(ip);
       return -1;
     }
+		*/
   }
 
   if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0)
@@ -101,6 +103,7 @@ static int vfs_open(const char *pathname, int flags)
   }
   iunlock(ip);
 
+	printf("\033[30m, the path is %s\n\033[0m", pathname);
   f->type = FD_INODE;
   f->ip = ip;
   f->off = 0;
