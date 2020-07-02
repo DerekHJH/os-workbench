@@ -23,6 +23,30 @@ void sort_handles()
 			}
 	}	
 }
+
+
+void fileoperation(void *arg)
+{
+	char *filename = (char *)arg;
+
+	printf("filename is %s\n", filename);
+	printf("before open\n");
+	int fd = vfs->open(filename, O_CREAT | O_RDWR);
+	printf("after open\n");
+	if(fd < 0)
+	{
+		printf("shit fd is negative\n");
+	}
+	printf("before write\n");
+	vfs->write(fd, filename, strlen(filename));
+	printf("after write\n");
+	char ans[128] = "\0";
+	printf("before read\n");
+	vfs->read(fd, ans, strlen(filename));
+	printf("after read\n");
+	printf("===================ans is %s\n", ans);
+	while(1);
+}
 static void os_init() 
 {
 	//mpe still not on, no need to worry about mpe
@@ -31,6 +55,7 @@ static void os_init()
 	dev->init();
 	vfs->init();
 	sort_handles();
+	kmt->create(pmm->alloc(sizeof(task_t)), "fileoperation", fileoperation, "fileoperation");
 }
 
 static void os_run() 
