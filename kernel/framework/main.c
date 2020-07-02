@@ -37,7 +37,12 @@ void fileoperation(void *arg)
 	char *filename = (char *)arg;
 	printf("before open\n");
 	int fd = vfs->open(filename, O_CREAT | O_RDWR);
+	printf("filename is %s\n", filename);
 	printf("after open\n");
+	if(fd < 0)
+	{
+		printf("shit fd is negative\n");
+	}
 	printf("before write\n");
 	vfs->write(fd, filename, strlen(filename));
 	printf("after write\n");
@@ -46,6 +51,7 @@ void fileoperation(void *arg)
 	vfs->read(fd, ans, strlen(filename));
 	printf("after read\n");
 	printf("===================ans is %s\n", ans);
+	while(1);
 }
 void create_threads()
 {
