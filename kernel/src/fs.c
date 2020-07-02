@@ -435,6 +435,7 @@ static inode_t *namex(char *path, int nameiparent, char *name)
 
   while((path = skipelem(path, name)) != 0)
   {
+		printf("yes??????\n");
     ilock(ip);
     if(ip->type != T_DIR)
     {

@@ -80,7 +80,6 @@ static int vfs_open(const char *pathname, int flags)
   if(flags & O_CREAT)
 	{
     ip = create((char *)pathname, T_FILE, 0, 0);
-		printf("in create ip is 0x%x\n", ip);
     if(ip == 0)return -1;
   } 
 	else 
