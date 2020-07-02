@@ -259,6 +259,7 @@ inode_t *namei(char *path)
 
 inode_t *nameiparent(char *path, char *name)
 {
+	printf("in nameiparent ipath is %s\n", path);
   return namex(path, 1, name);
 }
 
