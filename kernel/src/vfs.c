@@ -36,8 +36,9 @@ static inode_t *create(char *path, short type, short major, short minor)
   inode_t *ip, *dp;
   char name[DIRSIZ];
 
-	printf("here !!!!!!!!!!!!\n");
   if((dp = nameiparent(path, name)) == 0)return 0;
+
+	printf("here !!!!!!!!!!!!\n");
   ilock(dp);
 
   if((ip = dirlookup(dp, name, 0)) != 0)
