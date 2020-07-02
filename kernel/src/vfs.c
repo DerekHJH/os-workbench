@@ -40,9 +40,9 @@ static inode_t *create(char *path, short type, short major, short minor)
 
   ilock(dp);
 
-	printf("dp->sizeo is %d\n", dp->size);
   if((ip = dirlookup(dp, name, 0)) != 0)
 	{
+		printf("asjkcbaskjcbaskjcvaksjsc\n");
     iunlockput(dp);
     ilock(ip);
     if(type == T_FILE && ip->type == T_FILE)return ip;
