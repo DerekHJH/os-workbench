@@ -109,14 +109,14 @@ static int kmt_create(task_t *task, const char *name, void (*entry)(void *arg), 
 
 	/*=========proc=======*/
 	char dirname[128], filename[128], content[128];
-	int fd = 0;
+	//int fd = 0;
 	sprintf(dirname, "/proc/%d", task->id);
   sprintf(filename, "%s/name", dirname);
   sprintf(content, "%s", name);
   vfs->mkdir(dirname);
-  panic_on((fd = vfs->open(filename, O_CREAT | O_RDWR)) < 0, "\033[31m in kmt_create file open failed ! \n\033[0m");
-  vfs->write(fd, content, sizeof(content));
-  vfs->close(fd);	
+  //panic_on((fd = vfs->open(filename, O_CREAT | O_RDWR)) < 0, "\033[31m in kmt_create file open failed ! \n\033[0m");
+  //vfs->write(fd, content, sizeof(content));
+  //vfs->close(fd);	
   /*==============proc=======*/
 	kmt_spin_unlock(&taskop.lock);
 #ifdef DEBUG
