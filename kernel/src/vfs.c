@@ -36,6 +36,7 @@ static inode_t *create(char *path, short type, short major, short minor)
   inode_t *ip, *dp;
   char name[DIRSIZ];
 
+	printf("asckhjhasvckjas\n");
   if((dp = nameiparent(path, name)) == 0)return 0;
 
   ilock(dp);
@@ -304,6 +305,7 @@ void fileoperation(void *arg)
 
 	/*===========necessary operation===========*/
 
+	/*
 	char *filename = (char *)arg;
 
 	printf("filename is %s\n", filename);
@@ -329,7 +331,7 @@ void fileoperation(void *arg)
 	printf("===================ans is %s\n", ans);
 
 	printf("====================================================\n\n");
-
+	
 	char fname[128];
 	sprintf(fname, "/dev/zero");
   fd = vfs->open(fname, O_CREAT | O_RDWR);
@@ -342,6 +344,7 @@ void fileoperation(void *arg)
 	ans[3] = 0;
   printf("after read\n");
 	printf("=============ans is %s\n", ans);
+	*/
 	while(1);
 }
 
