@@ -41,7 +41,7 @@ void fileclose(file_t *f)
   file_t ff;
 
 	kmt->spin_lock(&ftable.lock);
-	panic_on(f->ref < 1, "\033[31m filedclose\n \033[0m");
+	//panic_on(f->ref < 1, "\033[31m filedclose\n \033[0m");
 
   if(--f->ref > 0)
   {
