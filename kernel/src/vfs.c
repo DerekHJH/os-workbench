@@ -274,6 +274,7 @@ static void vfs_init()
 		cpuinfo[i].idle.cwd = namei("/");
 	}	
 	
+	printf("hahahahahha is %d\n", ((inode_t *)cpuinfo[0].idle.cwd)->nlink);
 	
 	
 
